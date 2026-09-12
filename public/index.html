@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Dancing+Script:wght@400..700&family=Great+Vibes&family=Parisienne&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&family=Sacramento&family=Special+Elite&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=2.4">
+    <link rel="stylesheet" href="style.css?v=2.5">
 </head>
 
 <body>
@@ -405,15 +405,23 @@
                 </div>
 
                 <div class="photo-preview-wrap">
-                    <img id="modalPhotoPreview" src="" alt="Photo Preview" class="hidden">
+                    <div id="modalPhotoPreviewFrame" class="modal-photo-preview-frame frame-none">
+                        <div class="item-photo-img-wrap">
+                            <img id="modalPhotoPreview" src="" alt="Photo Preview" class="hidden">
+                        </div>
+                    </div>
                     <p id="photoPlaceholderText">Select a photo to preview</p>
                 </div>
 
                 <div class="border-style-selector">
                     <label>Select Border / Frame Decor:</label>
                     <div class="border-options-grid">
-                        <label class="border-option-item selected" data-frame="frame-polaroid">
-                            <input type="radio" name="frameChoice" value="frame-polaroid" checked>
+                        <label class="border-option-item selected" data-frame="frame-none">
+                            <input type="radio" name="frameChoice" value="frame-none" checked>
+                            <span class="frame-name">🚫 Plain (No Frame)</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-polaroid">
+                            <input type="radio" name="frameChoice" value="frame-polaroid">
                             <span class="frame-name">📸 Classic Polaroid</span>
                         </label>
                         <label class="border-option-item" data-frame="frame-vintage-gold">
@@ -621,7 +629,7 @@
     <audio id="bgMusicAudio" loop preload="auto"></audio>
 
     <!-- JAVASCRIPT -->
-    <script src="script.js?v=2.4"></script>
+    <script src="script.js?v=2.5"></script>
 
 </body>
 

@@ -95,8 +95,10 @@ function unlockWebsite() {
         // 🔄 Switch back to NORMAL OS cursor on second page
         disableRomanticCursor();
 
-        // 📖 Schedule smooth transition to 3D Love Diary
-        scheduleDiaryStageTransition();
+        // 💖 Show Big Beating Heart "Welcome My Heart ❤️" for 2.6s, then auto-transition to Diary!
+        setTimeout(() => {
+            transitionToDiaryStage();
+        }, 2600);
     }, 1700);
 }
 
@@ -1902,13 +1904,17 @@ function createDiaryItemElement(item, side, pageIndex) {
         el.appendChild(textDiv);
     } else if (item.type === "photo") {
         const photoWrap = document.createElement("div");
-        photoWrap.className = `item-photo-wrapper ${item.frame || "frame-polaroid"}`;
+        photoWrap.className = `item-photo-wrapper ${item.frame || "frame-none"}`;
+
+        const imgWrap = document.createElement("div");
+        imgWrap.className = "item-photo-img-wrap";
 
         const img = document.createElement("img");
         img.className = "item-photo-img";
         img.src = item.src;
         img.alt = "Memory Photo";
-        photoWrap.appendChild(img);
+        imgWrap.appendChild(img);
+        photoWrap.appendChild(imgWrap);
 
         if (item.caption) {
             const cap = document.createElement("div");
@@ -2332,13 +2338,19 @@ function setupModals() {
         });
     }
 
-    // Frame Radio options selection
+    // Frame Radio options selection & Live Preview
     document.querySelectorAll(".border-option-item").forEach(item => {
         item.addEventListener("click", () => {
             document.querySelectorAll(".border-option-item").forEach(i => i.classList.remove("selected"));
             item.classList.add("selected");
             const radio = item.querySelector("input[type='radio']");
             if (radio) radio.checked = true;
+
+            const previewFrame = document.getElementById("modalPhotoPreviewFrame");
+            if (previewFrame) {
+                const frameChoice = item.dataset.frame || "frame-none";
+                previewFrame.className = `modal-photo-preview-frame ${frameChoice}`;
+            }
         });
     });
 
@@ -2350,7 +2362,7 @@ function setupModals() {
                 return;
             }
             const selectedRadio = document.querySelector("input[name='frameChoice']:checked");
-            const frame = selectedRadio ? selectedRadio.value : "frame-polaroid";
+            const frame = selectedRadio ? selectedRadio.value : "frame-none";
             const caption = document.getElementById("modalPhotoCaption").value.trim();
             const targetSide = document.getElementById("modalPhotoPageTarget").value;
 
@@ -2358,23 +2370,27 @@ function setupModals() {
                 ? diaryState.currentPagePair * 2
                 : diaryState.currentPagePair * 2 + 1;
 
+            const pageItems = diaryState.pages[targetPageIndex].items;
+            const offset = (pageItems.length * 5) % 25;
+
             const newItem = {
                 id: `item-${Date.now()}`,
                 type: "photo",
-                left: 15,
-                top: 15,
-                width: 65,
-                height: 55,
+                left: 18 + offset,
+                top: 16 + offset,
+                width: 64,
+                height: 54,
                 src: currentPhotoSrc,
                 frame: frame,
                 caption: caption,
-                zIndex: 4
+                zIndex: 10 + pageItems.length
             };
 
             diaryState.pages[targetPageIndex].items.push(newItem);
             renderCurrentPages();
             saveDiaryToStorage(true);
             closeModal("photoModal");
+            showToastNotice("Photo added to page! 🖼️");
 
             // Reset modal
             currentPhotoSrc = "";
@@ -2383,6 +2399,18 @@ function setupModals() {
             if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
             document.getElementById("modalPhotoCaption").value = "";
             photoUrl.value = "";
+
+            const previewFrame = document.getElementById("modalPhotoPreviewFrame");
+            if (previewFrame) previewFrame.className = "modal-photo-preview-frame frame-none";
+            document.querySelectorAll(".border-option-item").forEach((b, idx) => {
+                if (idx === 0) {
+                    b.classList.add("selected");
+                    const r = b.querySelector("input[type='radio']");
+                    if (r) r.checked = true;
+                } else {
+                    b.classList.remove("selected");
+                }
+            });
         });
     }
 

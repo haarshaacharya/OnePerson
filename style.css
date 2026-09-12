@@ -756,53 +756,69 @@ button:hover {
 
 
 .welcome {
-    max-width: 700px;
-
-    animation:
-        appear 2s ease;
+    max-width: 750px;
+    animation: appear 1.2s ease;
 }
 
-
-.heart {
-    font-size: 70px;
-
-    margin-bottom: 25px;
-
-    animation:
-        heartbeat 1.5s infinite;
+.welcome-heart-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
+.big-welcome-heart {
+    font-size: 130px;
+    margin-bottom: 24px;
+    display: inline-block;
+    animation: bigHeartPulse 1.35s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    filter: drop-shadow(0 0 35px rgba(255, 42, 133, 0.95));
+}
 
-@keyframes heartbeat {
-
-    0%,
+@keyframes bigHeartPulse {
+    0% {
+        transform: scale(0.95);
+        filter: drop-shadow(0 0 25px rgba(255, 42, 133, 0.7));
+    }
+    30% {
+        transform: scale(1.24);
+        filter: drop-shadow(0 0 55px rgba(255, 42, 133, 1));
+    }
+    45% {
+        transform: scale(1.08);
+        filter: drop-shadow(0 0 35px rgba(255, 42, 133, 0.85));
+    }
+    60% {
+        transform: scale(1.28);
+        filter: drop-shadow(0 0 65px rgba(255, 42, 133, 1));
+    }
     100% {
-        transform: scale(1);
+        transform: scale(0.95);
+        filter: drop-shadow(0 0 25px rgba(255, 42, 133, 0.7));
     }
+}
 
-    50% {
-        transform: scale(1.2);
+.welcome-heart-title {
+    font-family: 'Great Vibes', 'Playfair Display', cursive, serif;
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffffff 15%, #ff80ab 60%, #ff2a85 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 35px rgba(255, 42, 133, 0.85);
+    margin: 0;
+    animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from {
+        filter: drop-shadow(0 0 15px rgba(255, 42, 133, 0.6));
     }
-
+    to {
+        filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.95));
+    }
 }
-
-
-.welcome h1 {
-    font-size: 60px;
-}
-
-
-.welcome p {
-    color: #aaa;
-
-    line-height: 1.8;
-}
-
-.welcome-action-box {
-    margin-top: 30px;
-}
-
-.glow-story-btn {
     padding: 16px 36px;
     font-size: 18px;
     font-weight: 600;
@@ -1581,6 +1597,7 @@ button:hover {
 
 
 /* --- 2. Photo Item & Frame Decorators --- */
+/* --- 2. Photo Item & Frame Decorators (Guaranteed Clean Fit) --- */
 .item-photo-wrapper {
     width: 100%;
     height: 100%;
@@ -1588,6 +1605,21 @@ button:hover {
     flex-direction: column;
     box-sizing: border-box;
     transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.item-photo-img-wrap {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .item-photo-img {
@@ -1596,27 +1628,41 @@ button:hover {
     object-fit: cover;
     display: block;
     pointer-events: none;
+    border-radius: inherit;
 }
 
 .photo-caption-text {
+    flex-shrink: 0;
     font-family: 'Caveat', cursive;
-    font-size: 16px;
+    font-size: 15px;
     color: #4a332d;
     text-align: center;
-    margin-top: 6px;
-    padding: 0 4px;
+    padding: 4px 6px 2px 6px;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+/* Border Decorator: None (Plain Photo) */
+.frame-none {
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+    border-radius: 8px;
+}
+.frame-none .item-photo-img-wrap {
+    border-radius: 8px;
 }
 
 /* Border Decorator: Classic Polaroid */
 .frame-polaroid {
     background: #ffffff;
-    padding: 8px 8px 24px 8px;
-    border-radius: 2px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 8px 8px 18px 8px;
+    border-radius: 3px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
 }
-
-.frame-polaroid .item-photo-img {
-    border-radius: 1px;
+.frame-polaroid .item-photo-img-wrap {
+    border-radius: 2px;
 }
 
 /* Border Decorator: Royal Gold Filigree */
@@ -1626,71 +1672,96 @@ button:hover {
     border: 4px double #d4af37;
     border-radius: 8px;
     box-shadow:
-        0 0 15px rgba(212, 175, 55, 0.4),
+        0 0 16px rgba(212, 175, 55, 0.45),
         0 8px 22px rgba(0, 0, 0, 0.3);
     outline: 2px solid #8c6818;
     outline-offset: -7px;
 }
+.frame-vintage-gold .item-photo-img-wrap {
+    border-radius: 4px;
+}
 
 /* Border Decorator: Glowing Neon Heart */
 .frame-neon-heart {
+    background: rgba(22, 10, 28, 0.85);
     padding: 6px;
     border: 3px solid #ff2a85;
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow:
-        0 0 15px rgba(255, 42, 133, 0.8),
-        inset 0 0 15px rgba(255, 42, 133, 0.4);
+        0 0 18px rgba(255, 42, 133, 0.85),
+        inset 0 0 12px rgba(255, 42, 133, 0.35);
 }
-
-.frame-neon-heart .item-photo-img {
-    border-radius: 8px;
+.frame-neon-heart .item-photo-img-wrap {
+    border-radius: 12px;
 }
 
 /* Border Decorator: Rose Vines */
 .frame-rose-vines {
-    padding: 10px;
+    padding: 8px;
     background: #fffdf9;
     border: 2px dashed #e91e63;
     border-radius: 10px;
-    box-shadow: 0 6px 18px rgba(233, 30, 99, 0.2);
+    box-shadow: 0 6px 18px rgba(233, 30, 99, 0.22);
+}
+.frame-rose-vines .item-photo-img-wrap {
+    border-radius: 6px;
 }
 
 /* Border Decorator: Pastel Washi Tape */
 .frame-washi-tape {
     background: #fff;
     padding: 8px;
+    border-radius: 2px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     position: relative;
 }
-
 .frame-washi-tape::before {
     content: "";
     position: absolute;
-    top: -10px;
+    top: -8px;
     left: 20%;
     width: 60px;
-    height: 20px;
-    background: rgba(255, 182, 193, 0.75);
-    transform: rotate(-4deg);
+    height: 18px;
+    background: rgba(255, 182, 193, 0.85);
+    transform: rotate(-3deg);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    z-index: 5;
+}
+.frame-washi-tape .item-photo-img-wrap {
+    border-radius: 2px;
 }
 
 /* Border Decorator: Vintage Postage Stamp */
 .frame-postage-stamp {
-    padding: 12px;
+    padding: 10px;
     background: #fffaf0;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     border: 2px dotted #8b5a2b;
+    border-radius: 4px;
+}
+.frame-postage-stamp .item-photo-img-wrap {
+    border-radius: 2px;
 }
 
 /* Border Decorator: Soft Angel Glow */
 .frame-soft-glow {
+    background: transparent;
     border-radius: 16px;
-    box-shadow: 0 0 25px rgba(255, 182, 193, 0.8), 0 0 50px rgba(255, 105, 180, 0.4);
+    box-shadow: 0 0 25px rgba(255, 182, 193, 0.85), 0 0 50px rgba(255, 105, 180, 0.45);
+}
+.frame-soft-glow .item-photo-img-wrap {
+    border-radius: 16px;
 }
 
-.frame-soft-glow .item-photo-img {
-    border-radius: 16px;
+/* Modal Live Photo Preview Frame */
+.modal-photo-preview-frame {
+    width: 190px;
+    height: 155px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+    margin: 0 auto;
 }
 
 
