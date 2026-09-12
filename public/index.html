@@ -7,7 +7,11 @@
 
     <title>❤️ Only for you</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Dancing+Script:wght@400..700&family=Great+Vibes&family=Parisienne&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&family=Sacramento&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=2.4">
 </head>
 
 <body>
@@ -133,36 +137,491 @@
 
     <div id="secretWebsite" class="secret hidden">
 
-        <div class="welcome">
+        <!-- STEP 1: WELCOME SCREEN (BIG BEATING HEART & WELCOME GREETING) -->
+        <div id="welcomeScreen" class="welcome welcome-heart-screen">
 
-            <div class="heart">
+            <div class="heart big-welcome-heart">
                 ❤️
             </div>
 
-
-            <p class="small-text">
-                ACCESS GRANTED
-            </p>
-
-
-            <h1>
-                Welcome.
+            <h1 class="welcome-heart-title">
+                Welcome My Heart ❤️
             </h1>
 
+        </div>
 
-            <p>
-                This little place on the internet...
-                <br>
-                was created especially for you. ❤️
-            </p>
+        <!-- STEP 2 & 3: 3D ROMANTIC LOVE DIARY (BOOK) STAGE -->
+        <div id="diaryStage" class="diary-stage hidden">
+
+            <!-- 📕 VIEW A: CLOSED 3D DIARY (AUTO-ZOOM & TOP/ISOMETRIC VIEW) -->
+            <div id="closedDiaryWrapper" class="closed-diary-wrapper">
+                <div class="diary-top-prompt">
+                    <span class="sparkle-icon">✨</span>
+                    <span>Tap on the Diary to Open our Secrets</span>
+                    <span class="sparkle-icon">✨</span>
+                </div>
+
+                <div id="closedDiary3D" class="diary-3d-book">
+                    <!-- Book Shadow -->
+                    <div class="book-depth-shadow"></div>
+
+                    <!-- Front Hardcover -->
+                    <div class="book-cover-front">
+                        <div class="cover-emboss-border">
+                            <div class="cover-inner-frame">
+                                <div class="cover-golden-corner tl"></div>
+                                <div class="cover-golden-corner tr"></div>
+                                <div class="cover-golden-corner bl"></div>
+                                <div class="cover-golden-corner br"></div>
+
+                                <div class="cover-emblem">
+                                    <div class="heart-lock-seal">
+                                        <span class="seal-heart">❤️</span>
+                                        <div class="golden-keyhole"></div>
+                                    </div>
+                                </div>
+
+                                <h2 class="cover-title">Our Love Diary</h2>
+                                <p class="cover-subtitle">Forever & Always ❤️</p>
+                                <div class="cover-flourish">❦ ❧</div>
+                            </div>
+                        </div>
+
+                        <!-- Bookmark Satin Ribbon -->
+                        <div class="cover-ribbon"></div>
+                    </div>
+
+                    <!-- Book Spine / Edge Thickness -->
+                    <div class="book-spine"></div>
+                    <div class="book-pages-edge-right"></div>
+                    <div class="book-pages-edge-bottom"></div>
+                </div>
+
+                <p class="click-hint-text">
+                    <span class="pulse-hand">👆</span> Click the book to open
+                </p>
+            </div>
+
+
+            <!-- 📖 VIEW B: OPEN 2-PAGE SPREAD DIARY -->
+            <div id="openDiaryWrapper" class="open-diary-wrapper hidden">
+
+                <!-- TOP CONTROL BAR -->
+                <header class="diary-header-bar">
+                    <div class="header-left">
+                        <span class="diary-logo-text">📖 Our Story</span>
+                        <div class="view-mode-pill">
+                            <button id="modeToggleBtn" class="mode-toggle-btn active" title="Switch between Read and Decorate mode">
+                                ✨ Decorate Mode
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="header-center">
+                        <button id="prevPageBtn" class="nav-btn" title="Previous Page">❮ Prev</button>
+                        <span id="pageIndicator" class="page-indicator">Pages 1 - 2</span>
+                        <button id="nextPageBtn" class="nav-btn" title="Next Page">Next ❯</button>
+                        <button id="addPageBtn" class="action-mini-btn" title="Add a new page">+ Add Page</button>
+                    </div>
+
+                    <div class="header-right">
+                        <!-- Music Player Widget -->
+                        <div class="music-widget">
+                            <button id="musicToggleBtn" class="music-disc-btn spinning" title="Toggle Romantic Music">
+                                <span class="disc-icon">💿</span>
+                                <span class="sound-wave">
+                                    <i></i><i></i><i></i><i></i>
+                                </span>
+                            </button>
+                            <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.7" title="Volume" class="vol-slider">
+                            <button id="openMusicModalBtn" class="music-settings-btn" title="Music Settings / Custom Song">🎵</button>
+                        </div>
+
+                        <!-- Close Book Button -->
+                        <button id="closeBookBtn" class="close-book-btn" title="Close Diary">📕 Close</button>
+                    </div>
+                </header>
+
+                <!-- THE REALISTIC 3D OPEN BOOK SPREAD -->
+                <div class="open-book-scene">
+                    <div id="bookSpread" class="book-spread">
+                        <div class="book-leather-casing"></div>
+
+                        <!-- LEFT PAGE -->
+                        <div id="leftPage" class="diary-page page-left" data-page-side="left">
+                            <div class="page-paper-texture"></div>
+                            <div class="page-spine-shadow"></div>
+                            <div class="page-content-area" id="leftPageContent">
+                                <!-- User elements will be dynamically injected here -->
+                            </div>
+                            <div class="page-footer">
+                                <span class="page-number-tag" id="leftPageNumber">1</span>
+                            </div>
+                        </div>
+
+                        <!-- CENTER BOOK GUTTER / BINDING -->
+                        <div class="book-center-gutter">
+                            <div class="gutter-shadow"></div>
+                            <div class="gutter-ribbon"></div>
+                        </div>
+
+                        <!-- RIGHT PAGE -->
+                        <div id="rightPage" class="diary-page page-right" data-page-side="right">
+                            <div class="page-paper-texture"></div>
+                            <div class="page-spine-shadow right"></div>
+                            <div class="page-content-area" id="rightPageContent">
+                                <!-- User elements will be dynamically injected here -->
+                            </div>
+                            <div class="page-footer">
+                                <span class="page-number-tag" id="rightPageNumber">2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING CREATIVE SCRAPBOOK TOOLBAR -->
+                <div id="decorateToolbar" class="decorate-toolbar">
+                    <div class="toolbar-drag-handle">✨ Decorate Page</div>
+
+                    <div class="toolbar-buttons">
+                        <button id="toolAddTextBtn" class="tool-btn" title="Add stylish text">
+                            <span class="tool-icon">✍️</span>
+                            <span class="tool-label">Text</span>
+                        </button>
+
+                        <button id="toolAddPhotoBtn" class="tool-btn" title="Add photo with custom frames">
+                            <span class="tool-icon">🖼️</span>
+                            <span class="tool-label">Photo</span>
+                        </button>
+
+                        <button id="toolAddReelBtn" class="tool-btn" title="Add short video / reel">
+                            <span class="tool-icon">🎬</span>
+                            <span class="tool-label">Reel</span>
+                        </button>
+
+                        <button id="toolAddStickerBtn" class="tool-btn" title="Add cute love stickers & emojis">
+                            <span class="tool-icon">💖</span>
+                            <span class="tool-label">Stickers</span>
+                        </button>
+
+                        <button id="toolFrameDecorBtn" class="tool-btn" title="Change photo borders & frame styles">
+                            <span class="tool-icon">🎨</span>
+                            <span class="tool-label">Borders</span>
+                        </button>
+
+                        <div class="toolbar-divider"></div>
+
+                        <button id="toolSaveBtn" class="tool-btn save-btn" title="Save changes">
+                            <span class="tool-icon">💾</span>
+                            <span class="tool-label">Save</span>
+                        </button>
+
+                        <button id="toolDeletePageBtn" class="tool-btn danger-btn" title="Delete current page">
+                            <span class="tool-icon">🗑️</span>
+                            <span class="tool-label">Delete</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
 
+    <!-- =========================================
+         🎨 MODAL: ADD / EDIT TEXT
+    ========================================== -->
+    <div id="textModal" class="diary-modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>✍️ Add Love Note / Text</h3>
+                <button class="modal-close" id="closeTextModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label>Write your message:</label>
+                <textarea id="modalTextInput" placeholder="Write something romantic here... ❤️" rows="4"></textarea>
+
+                <div class="control-row">
+                    <label>Font Style:</label>
+                    <select id="modalTextFont">
+                        <option value="'Great Vibes', cursive">Great Vibes (Romantic Calligraphy)</option>
+                        <option value="'Dancing Script', cursive">Dancing Script (Playful Cursive)</option>
+                        <option value="'Caveat', cursive">Caveat (Heartfelt Handwriting)</option>
+                        <option value="'Parisienne', cursive">Parisienne (Elegant French Script)</option>
+                        <option value="'Sacramento', cursive">Sacramento (Delicate Cursive)</option>
+                        <option value="'Special Elite', cursive">Special Elite (Vintage Typewriter)</option>
+                        <option value="'Playfair Display', serif">Playfair Display (Luxury Serif)</option>
+                        <option value="'Poppins', sans-serif">Poppins (Clean Sans)</option>
+                    </select>
+                </div>
+
+                <div class="control-row">
+                    <label>Font Size:</label>
+                    <input type="range" id="modalTextSize" min="14" max="64" value="26">
+                    <span id="modalTextSizeVal">26px</span>
+                </div>
+
+                <div class="control-row">
+                    <label>Text Color:</label>
+                    <input type="color" id="modalTextColor" value="#2c1820">
+                    <label style="margin-left: 15px;">Glow Effect:</label>
+                    <input type="checkbox" id="modalTextGlow">
+                </div>
+
+                <div class="control-row">
+                    <label>Target Page:</label>
+                    <select id="modalTextPageTarget">
+                        <option value="left">Left Page</option>
+                        <option value="right">Right Page</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalAddTextSubmit" class="modal-submit-btn">Add to Page ❤️</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================
+         🖼️ MODAL: ADD PHOTO & BORDER DECORATION
+    ========================================== -->
+    <div id="photoModal" class="diary-modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>🖼️ Add Photo with Decorative Border</h3>
+                <button class="modal-close" id="closePhotoModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-tabs">
+                    <label class="tab-label">
+                        <input type="file" id="modalPhotoFile" accept="image/*" style="display:none;">
+                        <span class="upload-btn-trigger">📁 Choose Photo from Device</span>
+                    </label>
+                    <div class="divider-text">OR enter Image URL</div>
+                    <input type="text" id="modalPhotoUrl" placeholder="https://example.com/photo.jpg">
+                </div>
+
+                <div class="photo-preview-wrap">
+                    <img id="modalPhotoPreview" src="" alt="Photo Preview" class="hidden">
+                    <p id="photoPlaceholderText">Select a photo to preview</p>
+                </div>
+
+                <div class="border-style-selector">
+                    <label>Select Border / Frame Decor:</label>
+                    <div class="border-options-grid">
+                        <label class="border-option-item selected" data-frame="frame-polaroid">
+                            <input type="radio" name="frameChoice" value="frame-polaroid" checked>
+                            <span class="frame-name">📸 Classic Polaroid</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-vintage-gold">
+                            <input type="radio" name="frameChoice" value="frame-vintage-gold">
+                            <span class="frame-name">👑 Royal Gold Filigree</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-neon-heart">
+                            <input type="radio" name="frameChoice" value="frame-neon-heart">
+                            <span class="frame-name">💖 Glowing Neon Hearts</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-rose-vines">
+                            <input type="radio" name="frameChoice" value="frame-rose-vines">
+                            <span class="frame-name">🌹 Rose Vine Floral</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-washi-tape">
+                            <input type="radio" name="frameChoice" value="frame-washi-tape">
+                            <span class="frame-name">🎀 Pastel Washi Tape</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-postage-stamp">
+                            <input type="radio" name="frameChoice" value="frame-postage-stamp">
+                            <span class="frame-name">💌 Vintage Stamp</span>
+                        </label>
+                        <label class="border-option-item" data-frame="frame-soft-glow">
+                            <input type="radio" name="frameChoice" value="frame-soft-glow">
+                            <span class="frame-name">✨ Soft Angel Glow</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <label>Optional Caption:</label>
+                    <input type="text" id="modalPhotoCaption" placeholder="e.g. My favorite smile ❤️">
+                </div>
+
+                <div class="control-row">
+                    <label>Target Page:</label>
+                    <select id="modalPhotoPageTarget">
+                        <option value="left">Left Page</option>
+                        <option value="right">Right Page</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalAddPhotoSubmit" class="modal-submit-btn">Add Photo ❤️</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================
+         🎬 MODAL: ADD REEL / VIDEO (MOBILE SIZE)
+    ========================================== -->
+    <div id="reelModal" class="diary-modal hidden">
+        <div class="modal-card modal-card-reel">
+            <div class="modal-header">
+                <h3>🎬 Add Mobile Reel / Video</h3>
+                <button class="modal-close" id="closeReelModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 1-Click Romantic Sample Reels -->
+                <div class="reel-presets-section">
+                    <label class="presets-label">✨ Quick Preset Reels (1-Click):</label>
+                    <div class="reel-preset-buttons">
+                        <button type="button" class="preset-reel-btn active" data-preset="sparkle">✨ Sparkler Sunset</button>
+                        <button type="button" class="preset-reel-btn" data-preset="hearts">💖 Floating Hearts</button>
+                        <button type="button" class="preset-reel-btn" data-preset="starlight">🌟 Romantic Starlight</button>
+                    </div>
+                </div>
+
+                <div class="divider-text">OR upload from device / enter video link</div>
+
+                <div class="upload-tabs">
+                    <label class="tab-label">
+                        <input type="file" id="modalReelFile" accept="video/mp4,video/webm,video/quicktime" style="display:none;">
+                        <span class="upload-btn-trigger">📁 Choose Video/Reel from Device</span>
+                    </label>
+                    <div class="divider-text">OR enter YouTube Shorts or Direct Video URL</div>
+                    <input type="text" id="modalReelUrl" placeholder="https://youtube.com/shorts/... or https://example.com/reel.mp4">
+                </div>
+
+                <!-- 📱 Mobile Smartphone Vertical Preview (9:16 Aspect Ratio) -->
+                <div class="phone-preview-container">
+                    <div class="phone-preview-bezel">
+                        <div class="phone-preview-notch"></div>
+                        <div class="video-preview-wrap mobile-aspect">
+                            <video id="modalReelPreview" playsinline controls muted loop class="hidden"></video>
+                            <iframe id="modalReelIframePreview" class="hidden" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <p id="reelPlaceholderText">📱 Mobile preview appears here</p>
+                        </div>
+                        <div class="phone-preview-home-bar"></div>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <label>Autoplay when page opens:</label>
+                    <input type="checkbox" id="modalReelAutoplay" checked>
+                </div>
+
+                <div class="control-row">
+                    <label>Loop Video:</label>
+                    <input type="checkbox" id="modalReelLoop" checked>
+                </div>
+
+                <div class="control-row">
+                    <label>Target Page:</label>
+                    <select id="modalReelPageTarget">
+                        <option value="left">Left Page</option>
+                        <option value="right">Right Page</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalAddReelSubmit" class="modal-submit-btn">Add Mobile Reel to Page 🎬</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================
+         💖 MODAL: STICKER & EMOJI DRAWER
+    ========================================== -->
+    <div id="stickerModal" class="diary-modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>💖 Romantic Stickers & Emojis</h3>
+                <button class="modal-close" id="closeStickerModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-tip">Click any sticker or emoji to place it onto the page!</p>
+
+                <div class="stickers-grid" id="stickersGrid">
+                    <!-- Dynamic stickers will be filled by JS -->
+                </div>
+
+                <div class="control-row" style="margin-top: 15px;">
+                    <label>Target Page:</label>
+                    <select id="modalStickerPageTarget">
+                        <option value="left">Left Page</option>
+                        <option value="right">Right Page</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================
+         🎨 MODAL: QUICK FRAME DECORATOR (FOR SELECTED PHOTO)
+    ========================================== -->
+    <div id="frameDecoratorModal" class="diary-modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>🎨 Decorate Photo Border</h3>
+                <button class="modal-close" id="closeFrameModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="frameDecoratorHint">Select a photo on the page to change its border, or choose a style below:</p>
+                <div class="border-options-grid" id="quickFrameOptions">
+                    <button class="frame-preset-btn" data-frame="frame-polaroid">📸 Polaroid</button>
+                    <button class="frame-preset-btn" data-frame="frame-vintage-gold">👑 Royal Gold</button>
+                    <button class="frame-preset-btn" data-frame="frame-neon-heart">💖 Neon Heart</button>
+                    <button class="frame-preset-btn" data-frame="frame-rose-vines">🌹 Rose Vines</button>
+                    <button class="frame-preset-btn" data-frame="frame-washi-tape">🎀 Washi Tape</button>
+                    <button class="frame-preset-btn" data-frame="frame-postage-stamp">💌 Postage Stamp</button>
+                    <button class="frame-preset-btn" data-frame="frame-soft-glow">✨ Soft Glow</button>
+                    <button class="frame-preset-btn" data-frame="frame-none">🚫 Plain (No Border)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================
+         🎵 MODAL: MUSIC SETTINGS & CUSTOM SONG
+    ========================================== -->
+    <div id="musicModal" class="diary-modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>🎵 Romantic Background Music</h3>
+                <button class="modal-close" id="closeMusicModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label>Choose Preset Romantic Song:</label>
+                <div class="music-presets-list">
+                    <button class="music-preset-btn active" data-src="preset-romantic-piano">🎹 Romantic Piano & Strings</button>
+                    <button class="music-preset-btn" data-src="preset-lofi-love">🌙 Lofi Love Dream</button>
+                    <button class="music-preset-btn" data-src="preset-gentle-guitar">🎸 Acoustic Sweetheart</button>
+                </div>
+
+                <div class="divider-text">OR Upload Your Own Song / Reel Audio</div>
+                <div class="upload-tabs">
+                    <label class="tab-label">
+                        <input type="file" id="customMusicFile" accept="audio/*" style="display:none;">
+                        <span class="upload-btn-trigger">📁 Upload MP3 / Audio File</span>
+                    </label>
+                    <div class="divider-text">OR paste Audio URL</div>
+                    <input type="text" id="customMusicUrl" placeholder="https://example.com/song.mp3">
+                    <button id="applyMusicUrlBtn" class="action-mini-btn" style="margin-top: 8px;">Apply URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT FOR BACKGROUND MUSIC -->
+    <audio id="bgMusicAudio" loop preload="auto"></audio>
+
     <!-- JAVASCRIPT -->
-    <script src="script.js"></script>
+    <script src="script.js?v=2.4"></script>
 
 </body>
 
