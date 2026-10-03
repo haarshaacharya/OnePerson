@@ -7,6 +7,41 @@ const closePopup = document.getElementById("closePopup");
 const secretWebsite = document.getElementById("secretWebsite");
 const container = document.querySelector(".container");
 
+// Role state: 'editor' | 'reader'
+let currentUserRole = sessionStorage.getItem("user_role") || "editor";
+let selectedRoleTab = "editor";
+
+// Account Switcher Tabs
+const tabEditor = document.getElementById("tabEditor");
+const tabReader = document.getElementById("tabReader");
+const accountRoleDesc = document.getElementById("accountRoleDesc");
+
+function setAccountTab(role) {
+    selectedRoleTab = role;
+    if (role === "editor") {
+        tabEditor?.classList.add("active");
+        tabReader?.classList.remove("active");
+        if (passwordInput) passwordInput.placeholder = "Enter Editor Key...";
+        if (accountRoleDesc) {
+            accountRoleDesc.innerHTML = '👑 <strong>Editor:</strong> Full access to add, edit notes, photos & customize diary.';
+        }
+    } else {
+        tabReader?.classList.add("active");
+        tabEditor?.classList.remove("active");
+        if (passwordInput) passwordInput.placeholder = "Enter Reader Key...";
+        if (accountRoleDesc) {
+            accountRoleDesc.innerHTML = '📖 <strong>Reader:</strong> Read-only access to view & explore all memories.';
+        }
+    }
+}
+
+if (tabEditor) {
+    tabEditor.addEventListener("click", () => setAccountTab("editor"));
+}
+if (tabReader) {
+    tabReader.addEventListener("click", () => setAccountTab("reader"));
+}
+
 if (unlockBtn) {
     unlockBtn.addEventListener("click", checkPassword);
 }
@@ -32,22 +67,36 @@ async function checkPassword() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                password: enteredPassword
+                password: enteredPassword,
+                role: selectedRoleTab
             })
         });
 
         const data = await response.json();
 
         if (data.success) {
-            unlockWebsite();
+            currentUserRole = data.role || selectedRoleTab;
+            sessionStorage.setItem("user_role", currentUserRole);
+            if (currentUserRole === "editor") {
+                sessionStorage.setItem("editor_key", enteredPassword);
+            }
+            unlockWebsite(currentUserRole);
         } else {
             showRestrictedPopup();
             unlockBtn.textContent = "UNLOCK 🔓";
         }
     } catch (error) {
-        console.warn("API request failed or running offline, checking fallback password:", error);
-        if (enteredPassword.trim().toLowerCase() === "sanu16") {
-            unlockWebsite();
+        console.warn("API request failed or running offline, checking fallback passwords:", error);
+        const passClean = enteredPassword.trim().toLowerCase();
+        if (passClean === "sanu16") {
+            currentUserRole = "editor";
+            sessionStorage.setItem("user_role", "editor");
+            sessionStorage.setItem("editor_key", enteredPassword);
+            unlockWebsite("editor");
+        } else if (passClean === "reader16" || passClean === "read123" || passClean === "love16") {
+            currentUserRole = "reader";
+            sessionStorage.setItem("user_role", "reader");
+            unlockWebsite("reader");
         } else {
             showRestrictedPopup();
             unlockBtn.textContent = "UNLOCK 🔓";
@@ -68,7 +117,8 @@ if (closePopup) {
     });
 }
 
-function unlockWebsite() {
+function unlockWebsite(role = currentUserRole) {
+    currentUserRole = role;
     const lockCard = document.querySelector(".lock-card");
     if (lockCard) {
         lockCard.classList.add("unlocking");
@@ -79,6 +129,30 @@ function unlockWebsite() {
         unlockBtn.style.background = "linear-gradient(135deg, #ff2a85, #ff758c)";
         unlockBtn.style.boxShadow = "0 0 35px rgba(255, 42, 133, 0.8)";
     }
+
+    // Apply role class to document body
+    if (role === "reader") {
+        document.body.classList.add("role-reader");
+        document.body.classList.remove("role-editor");
+    } else {
+        document.body.classList.add("role-editor");
+        document.body.classList.remove("role-reader");
+    }
+
+    // Update Welcome Heart Screen text
+    const welcomeTitle = document.getElementById("welcomeHeartTitle");
+    const welcomeSubtitle = document.getElementById("welcomeHeartSubtitle");
+    if (welcomeTitle) {
+        welcomeTitle.textContent = role === "editor" ? "Welcome Creator ❤️" : "Welcome My Heart ❤️";
+    }
+    if (welcomeSubtitle) {
+        welcomeSubtitle.textContent = role === "editor"
+            ? "Editor Mode: Full access to add, edit & customize memories 👑"
+            : "Opening your private love memories (Read Only) 📖";
+    }
+
+    // Update Header Role Badge
+    applyRoleUI(role);
 
     // 💖 Full Screen Heart Storm Burst
     triggerHeartFlood();
@@ -95,11 +169,102 @@ function unlockWebsite() {
         // 🔄 Switch back to NORMAL OS cursor on second page
         disableRomanticCursor();
 
-        // 💖 Show Big Beating Heart "Welcome My Heart ❤️" for 2.6s, then auto-transition to Diary!
+        // 💖 Show Big Beating Heart for 2.6s, then auto-transition to Diary!
         setTimeout(() => {
             transitionToDiaryStage();
         }, 2600);
     }, 1700);
+}
+
+function applyRoleUI(role = currentUserRole) {
+    const roleBadge = document.getElementById("roleBadge");
+    const modeToggleBtn = document.getElementById("modeToggleBtn");
+    const openDiaryWrapper = document.getElementById("openDiaryWrapper");
+
+    if (roleBadge) {
+        if (role === "editor") {
+            roleBadge.textContent = "👑 Editor Mode";
+            roleBadge.className = "role-badge badge-editor";
+        } else {
+            roleBadge.textContent = "📖 Reader Mode";
+            roleBadge.className = "role-badge badge-reader";
+        }
+    }
+
+    if (role === "reader") {
+        if (diaryState) diaryState.isReadMode = true;
+        if (openDiaryWrapper) openDiaryWrapper.classList.add("read-mode");
+        if (modeToggleBtn) {
+            modeToggleBtn.textContent = "📖 Read Only";
+            modeToggleBtn.classList.remove("active");
+            modeToggleBtn.title = "Viewing Mode (Locked for Reader)";
+        }
+    } else {
+        if (modeToggleBtn) {
+            modeToggleBtn.textContent = (diaryState && diaryState.isReadMode) ? "📖 Read Mode" : "✨ Decorate Mode";
+            if (diaryState && !diaryState.isReadMode) {
+                modeToggleBtn.classList.add("active");
+                if (openDiaryWrapper) openDiaryWrapper.classList.remove("read-mode");
+            }
+        }
+    }
+}
+
+function lockWebsite() {
+    // Pause audio
+    const bgAudio = document.getElementById("bgMusicAudio");
+    if (bgAudio) {
+        try { bgAudio.pause(); } catch (e) {}
+    }
+    const musicBtn = document.getElementById("musicToggleBtn");
+    if (musicBtn) musicBtn.classList.remove("spinning");
+
+    // Clear saved session role
+    sessionStorage.removeItem("user_role");
+    sessionStorage.removeItem("editor_key");
+
+    // Reset styles on body
+    document.body.classList.remove("role-reader", "role-editor");
+
+    // Reset secret website
+    if (secretWebsite) {
+        secretWebsite.classList.remove("revealing");
+        secretWebsite.classList.add("hidden");
+    }
+
+    // Reset lock screen
+    const lockCard = document.querySelector(".lock-card");
+    if (lockCard) {
+        lockCard.classList.remove("unlocking");
+    }
+
+    if (unlockBtn) {
+        unlockBtn.textContent = "UNLOCK 🔓";
+        unlockBtn.style.background = "";
+        unlockBtn.style.boxShadow = "";
+    }
+
+    if (container) {
+        container.style.display = "flex";
+    }
+
+    // Reset closed/open diary stage for next entry
+    const diaryStage = document.getElementById("diaryStage");
+    const welcomeScreen = document.getElementById("welcomeScreen");
+    const closedDiaryWrapper = document.getElementById("closedDiaryWrapper");
+    const openDiaryWrapper = document.getElementById("openDiaryWrapper");
+
+    if (diaryStage) diaryStage.classList.add("hidden");
+    if (welcomeScreen) welcomeScreen.classList.remove("hidden");
+    if (closedDiaryWrapper) closedDiaryWrapper.classList.remove("hidden");
+    if (openDiaryWrapper) openDiaryWrapper.classList.add("hidden");
+
+    if (passwordInput) {
+        passwordInput.value = "";
+        passwordInput.focus();
+    }
+
+    showToastNotice("Diary Locked 🔒");
 }
 
 
@@ -1412,17 +1577,35 @@ async function initDiarySystem() {
 }
 
 async function loadDiaryData() {
+    let serverData = null;
     try {
-        const saved = localStorage.getItem("love_diary_data");
-        if (saved) {
-            diaryState = JSON.parse(saved);
-        } else {
+        const response = await fetch("/api/diary");
+        if (response.ok) {
+            const json = await response.json();
+            if (json.success && json.data && Array.isArray(json.data.pages) && json.data.pages.length > 0) {
+                serverData = json.data;
+            }
+        }
+    } catch (apiErr) {
+        console.warn("Could not fetch diary from server (offline mode):", apiErr);
+    }
+
+    if (serverData) {
+        diaryState = serverData;
+    } else {
+        try {
+            const saved = localStorage.getItem("love_diary_data");
+            if (saved) {
+                diaryState = JSON.parse(saved);
+            } else {
+                diaryState = JSON.parse(JSON.stringify(DEFAULT_DIARY_DATA));
+            }
+        } catch (e) {
+            console.error("Failed to load diary from localStorage:", e);
             diaryState = JSON.parse(JSON.stringify(DEFAULT_DIARY_DATA));
         }
-    } catch (e) {
-        console.error("Failed to load diary from localStorage:", e);
-        diaryState = JSON.parse(JSON.stringify(DEFAULT_DIARY_DATA));
     }
+
     if (!diaryState.pages || diaryState.pages.length === 0) {
         diaryState = JSON.parse(JSON.stringify(DEFAULT_DIARY_DATA));
     }
@@ -1448,6 +1631,11 @@ async function loadDiaryData() {
 }
 
 function saveDiaryToStorage(showNotice = false) {
+    if (currentUserRole === "reader") {
+        console.warn("Reader cannot save changes.");
+        return;
+    }
+
     try {
         const cleanState = JSON.parse(JSON.stringify(diaryState));
         // Strip out large ephemeral object URLs to keep localStorage clean
@@ -1459,6 +1647,20 @@ function saveDiaryToStorage(showNotice = false) {
             });
         });
         localStorage.setItem("love_diary_data", JSON.stringify(cleanState));
+
+        // Sync with server API for multi-device support
+        const editorKey = sessionStorage.getItem("editor_key") || "sanu16";
+        fetch("/api/diary", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-editor-key": editorKey
+            },
+            body: JSON.stringify({ data: cleanState })
+        }).catch(err => {
+            console.warn("Server sync error:", err);
+        });
+
         if (showNotice) {
             showToastNotice("Saved to Memory Book! ❤️");
         }
@@ -1529,6 +1731,7 @@ function openDiaryBook() {
             openWrapper.classList.remove("hidden");
             if (closedBook) closedBook.classList.remove("is-opening");
             renderCurrentPages();
+            applyRoleUI(currentUserRole);
         }
     }, 900);
 }
@@ -1816,6 +2019,11 @@ function flipPage(direction) {
 }
 
 function addNewPagePair() {
+    if (currentUserRole === "reader") {
+        showToastNotice("Reader Account is View Only 📖");
+        return;
+    }
+
     const p1 = diaryState.pages.length + 1;
     const p2 = diaryState.pages.length + 2;
     diaryState.pages.push({ pageNumber: p1, items: [] });
@@ -1829,6 +2037,11 @@ function addNewPagePair() {
 }
 
 function deleteCurrentPagePair() {
+    if (currentUserRole === "reader") {
+        showToastNotice("Reader Account is View Only 📖");
+        return;
+    }
+
     if (diaryState.pages.length <= 2) {
         alert("A diary needs at least 2 pages! ❤️");
         return;
@@ -1850,6 +2063,11 @@ function deleteCurrentPagePair() {
 }
 
 function toggleReadingMode() {
+    if (currentUserRole === "reader") {
+        showToastNotice("Reader Account is View Only 📖");
+        return;
+    }
+
     const wrapper = document.getElementById("openDiaryWrapper");
     const toggleBtn = document.getElementById("modeToggleBtn");
     diaryState.isReadMode = !diaryState.isReadMode;
@@ -1873,6 +2091,8 @@ function toggleReadingMode() {
 ------------------------------------------------------------- */
 
 function createDiaryItemElement(item, side, pageIndex) {
+    const isReader = currentUserRole === "reader";
+
     const el = document.createElement("div");
     el.className = "diary-item";
     el.id = item.id;
@@ -1889,7 +2109,7 @@ function createDiaryItemElement(item, side, pageIndex) {
     if (item.type === "text") {
         const textDiv = document.createElement("div");
         textDiv.className = "item-text-content";
-        textDiv.contentEditable = !diaryState.isReadMode;
+        textDiv.contentEditable = isReader ? false : !diaryState.isReadMode;
         textDiv.innerText = item.content;
         textDiv.style.fontFamily = item.font || "'Caveat', cursive";
         textDiv.style.fontSize = `${item.size || 22}px`;
@@ -1897,10 +2117,12 @@ function createDiaryItemElement(item, side, pageIndex) {
         if (item.glow) {
             textDiv.style.textShadow = `0 0 12px ${item.color || "#ff4081"}`;
         }
-        textDiv.addEventListener("input", () => {
-            item.content = textDiv.innerText;
-            saveDiaryToStorage();
-        });
+        if (!isReader) {
+            textDiv.addEventListener("input", () => {
+                item.content = textDiv.innerText;
+                saveDiaryToStorage();
+            });
+        }
         el.appendChild(textDiv);
     } else if (item.type === "photo") {
         const photoWrap = document.createElement("div");
@@ -1919,12 +2141,14 @@ function createDiaryItemElement(item, side, pageIndex) {
         if (item.caption) {
             const cap = document.createElement("div");
             cap.className = "photo-caption-text";
-            cap.contentEditable = !diaryState.isReadMode;
+            cap.contentEditable = isReader ? false : !diaryState.isReadMode;
             cap.innerText = item.caption;
-            cap.addEventListener("input", () => {
-                item.caption = cap.innerText;
-                saveDiaryToStorage();
-            });
+            if (!isReader) {
+                cap.addEventListener("input", () => {
+                    item.caption = cap.innerText;
+                    saveDiaryToStorage();
+                });
+            }
             photoWrap.appendChild(cap);
         }
         el.appendChild(photoWrap);
@@ -2017,111 +2241,113 @@ function createDiaryItemElement(item, side, pageIndex) {
         el.appendChild(stickerDiv);
     }
 
-    // Quick Action Bar (Floating above selected item)
-    const quickBar = document.createElement("div");
-    quickBar.className = "item-quick-bar";
+    if (!isReader) {
+        // Quick Action Bar (Floating above selected item)
+        const quickBar = document.createElement("div");
+        quickBar.className = "item-quick-bar";
 
-    const delBtn = document.createElement("button");
-    delBtn.className = "quick-btn danger";
-    delBtn.title = "Delete Item";
-    delBtn.textContent = "🗑️";
-    delBtn.onclick = (e) => {
-        e.stopPropagation();
-        deleteDiaryItem(item.id, pageIndex);
-    };
-    quickBar.appendChild(delBtn);
-
-    const fwdBtn = document.createElement("button");
-    fwdBtn.className = "quick-btn";
-    fwdBtn.title = "Bring Forward";
-    fwdBtn.textContent = "🔼";
-    fwdBtn.onclick = (e) => {
-        e.stopPropagation();
-        item.zIndex = (item.zIndex || 2) + 1;
-        el.style.zIndex = item.zIndex;
-        saveDiaryToStorage();
-    };
-    quickBar.appendChild(fwdBtn);
-
-    const bwdBtn = document.createElement("button");
-    bwdBtn.className = "quick-btn";
-    bwdBtn.title = "Send Backward";
-    bwdBtn.textContent = "🔽";
-    bwdBtn.onclick = (e) => {
-        e.stopPropagation();
-        item.zIndex = Math.max(1, (item.zIndex || 2) - 1);
-        el.style.zIndex = item.zIndex;
-        saveDiaryToStorage();
-    };
-    quickBar.appendChild(bwdBtn);
-
-    if (item.type === "photo") {
-        const frameBtn = document.createElement("button");
-        frameBtn.className = "quick-btn";
-        frameBtn.title = "Change Photo Border";
-        frameBtn.textContent = "🎨";
-        frameBtn.onclick = (e) => {
+        const delBtn = document.createElement("button");
+        delBtn.className = "quick-btn danger";
+        delBtn.title = "Delete Item";
+        delBtn.textContent = "🗑️";
+        delBtn.onclick = (e) => {
             e.stopPropagation();
-            openModal("frameDecoratorModal");
+            deleteDiaryItem(item.id, pageIndex);
         };
-        quickBar.appendChild(frameBtn);
-    }
+        quickBar.appendChild(delBtn);
 
-    el.appendChild(quickBar);
-
-    // 8 Resize Handles
-    const handles = ["nw", "ne", "sw", "se", "n", "s", "w", "e"];
-    handles.forEach(h => {
-        const handle = document.createElement("div");
-        handle.className = `resize-handle handle-${h}`;
-        handle.dataset.handle = h;
-        el.appendChild(handle);
-    });
-
-    // Item Selection and Dragging Listener
-    el.addEventListener("pointerdown", (e) => {
-        if (diaryState.isReadMode) return;
-
-        // If clicked on quick-btn or contenteditable text directly
-        if (e.target.closest(".item-quick-bar")) return;
-
-        selectItem(el);
-
-        const handle = e.target.closest(".resize-handle");
-        const pageContainer = el.parentElement;
-
-        if (handle) {
-            // Resize Action
+        const fwdBtn = document.createElement("button");
+        fwdBtn.className = "quick-btn";
+        fwdBtn.title = "Bring Forward";
+        fwdBtn.textContent = "🔼";
+        fwdBtn.onclick = (e) => {
             e.stopPropagation();
-            isResizing = true;
-            currentResizeHandle = handle.dataset.handle;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            const rect = el.getBoundingClientRect();
-            const parentRect = pageContainer.getBoundingClientRect();
+            item.zIndex = (item.zIndex || 2) + 1;
+            el.style.zIndex = item.zIndex;
+            saveDiaryToStorage();
+        };
+        quickBar.appendChild(fwdBtn);
 
-            itemStartLeft = ((rect.left - parentRect.left) / parentRect.width) * 100;
-            itemStartTop = ((rect.top - parentRect.top) / parentRect.height) * 100;
-            itemStartWidth = (rect.width / parentRect.width) * 100;
-            itemStartHeight = (rect.height / parentRect.height) * 100;
-            activePageElement = pageContainer;
-            window.addEventListener("pointermove", handlePointerMove);
-            window.addEventListener("pointerup", handlePointerUp);
-        } else {
-            // Drag Action
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            const rect = el.getBoundingClientRect();
-            const parentRect = pageContainer.getBoundingClientRect();
+        const bwdBtn = document.createElement("button");
+        bwdBtn.className = "quick-btn";
+        bwdBtn.title = "Send Backward";
+        bwdBtn.textContent = "🔽";
+        bwdBtn.onclick = (e) => {
+            e.stopPropagation();
+            item.zIndex = Math.max(1, (item.zIndex || 2) - 1);
+            el.style.zIndex = item.zIndex;
+            saveDiaryToStorage();
+        };
+        quickBar.appendChild(bwdBtn);
 
-            itemStartLeft = ((rect.left - parentRect.left) / parentRect.width) * 100;
-            itemStartTop = ((rect.top - parentRect.top) / parentRect.height) * 100;
-            activePageElement = pageContainer;
-            window.addEventListener("pointermove", handlePointerMove);
-            window.addEventListener("pointerup", handlePointerUp);
+        if (item.type === "photo") {
+            const frameBtn = document.createElement("button");
+            frameBtn.className = "quick-btn";
+            frameBtn.title = "Change Photo Border";
+            frameBtn.textContent = "🎨";
+            frameBtn.onclick = (e) => {
+                e.stopPropagation();
+                openModal("frameDecoratorModal");
+            };
+            quickBar.appendChild(frameBtn);
         }
-    });
+
+        el.appendChild(quickBar);
+
+        // 8 Resize Handles
+        const handles = ["nw", "ne", "sw", "se", "n", "s", "w", "e"];
+        handles.forEach(h => {
+            const handle = document.createElement("div");
+            handle.className = `resize-handle handle-${h}`;
+            handle.dataset.handle = h;
+            el.appendChild(handle);
+        });
+
+        // Item Selection and Dragging Listener
+        el.addEventListener("pointerdown", (e) => {
+            if (diaryState.isReadMode || currentUserRole === "reader") return;
+
+            // If clicked on quick-btn or contenteditable text directly
+            if (e.target.closest(".item-quick-bar")) return;
+
+            selectItem(el);
+
+            const handle = e.target.closest(".resize-handle");
+            const pageContainer = el.parentElement;
+
+            if (handle) {
+                // Resize Action
+                e.stopPropagation();
+                isResizing = true;
+                currentResizeHandle = handle.dataset.handle;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                const rect = el.getBoundingClientRect();
+                const parentRect = pageContainer.getBoundingClientRect();
+
+                itemStartLeft = ((rect.left - parentRect.left) / parentRect.width) * 100;
+                itemStartTop = ((rect.top - parentRect.top) / parentRect.height) * 100;
+                itemStartWidth = (rect.width / parentRect.width) * 100;
+                itemStartHeight = (rect.height / parentRect.height) * 100;
+                activePageElement = pageContainer;
+                window.addEventListener("pointermove", handlePointerMove);
+                window.addEventListener("pointerup", handlePointerUp);
+            } else {
+                // Drag Action
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                const rect = el.getBoundingClientRect();
+                const parentRect = pageContainer.getBoundingClientRect();
+
+                itemStartLeft = ((rect.left - parentRect.left) / parentRect.width) * 100;
+                itemStartTop = ((rect.top - parentRect.top) / parentRect.height) * 100;
+                activePageElement = pageContainer;
+                window.addEventListener("pointermove", handlePointerMove);
+                window.addEventListener("pointerup", handlePointerUp);
+            }
+        });
+    }
 
     return el;
 }
@@ -2627,6 +2853,12 @@ function setupDiaryListeners() {
     const closeBookBtn = document.getElementById("closeBookBtn");
     if (closeBookBtn) {
         closeBookBtn.addEventListener("click", closeDiaryBook);
+    }
+
+    // Lock Website / Logout button
+    const lockWebsiteBtn = document.getElementById("lockWebsiteBtn");
+    if (lockWebsiteBtn) {
+        lockWebsiteBtn.addEventListener("click", lockWebsite);
     }
 
     // Page navigation

@@ -535,6 +535,78 @@ h1 {
     margin-bottom: 25px;
 }
 
+/* =========================================
+   ACCOUNT TABS & ROLE SELECTOR
+========================================= */
+
+.account-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 5px;
+    border-radius: 35px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    margin: 10px auto 14px auto;
+    max-width: 320px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.account-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border-radius: 30px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.account-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.account-tab.active[data-role="editor"] {
+    background: linear-gradient(135deg, #ffd700, #ff9100);
+    color: #1a0815;
+    font-weight: 700;
+    box-shadow: 0 4px 18px rgba(255, 215, 0, 0.45);
+    transform: scale(1.02);
+}
+
+.account-tab.active[data-role="reader"] {
+    background: linear-gradient(135deg, #ff2a85, #ff758c);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 18px rgba(255, 42, 133, 0.5);
+    transform: scale(1.02);
+}
+
+.account-role-desc {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.45;
+    margin: 0 auto 18px auto;
+    max-width: 330px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.25s ease;
+}
 
 /* =========================================
    PASSWORD
@@ -2070,6 +2142,129 @@ button:hover {
 .read-mode .resize-handle {
     display: none !important;
 }
+
+/* =========================================
+   👑 DUAL ACCOUNT ROLES & CONTROLS
+========================================= */
+
+/* Header Role Badge */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.role-badge.badge-editor {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+}
+
+.role-badge.badge-reader {
+    background: rgba(255, 42, 133, 0.15);
+    color: #ff758c;
+    border: 1px solid rgba(255, 42, 133, 0.35);
+    box-shadow: 0 0 12px rgba(255, 42, 133, 0.25);
+}
+
+/* Lock / Logout Button */
+.lock-site-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.25s ease;
+}
+
+.lock-site-btn:hover {
+    background: rgba(255, 42, 133, 0.28);
+    color: #fff;
+    border-color: rgba(255, 42, 133, 0.6);
+    box-shadow: 0 0 16px rgba(255, 42, 133, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Welcome Screen Subtitle */
+.welcome-heart-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(255, 42, 133, 0.6);
+}
+
+/* =========================================
+   📖 READER ROLE STRICT LOCKDOWN
+========================================= */
+
+body.role-reader .decorate-toolbar {
+    display: none !important;
+}
+
+body.role-reader #addPageBtn {
+    display: none !important;
+}
+
+body.role-reader #openMusicModalBtn {
+    display: none !important;
+}
+
+body.role-reader .item-quick-bar,
+body.role-reader .resize-handle {
+    display: none !important;
+}
+
+body.role-reader .diary-item {
+    cursor: default !important;
+}
+
+body.role-reader .diary-item.is-selected {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+body.role-reader .item-text-content {
+    cursor: default !important;
+    user-select: text !important;
+}
+
+body.role-reader .photo-caption-text {
+    cursor: default !important;
+    user-select: text !important;
+}
+
+body.role-reader #modeToggleBtn {
+    pointer-events: none;
+    opacity: 0.85;
+    background: rgba(255, 42, 133, 0.2);
+    border-color: rgba(255, 42, 133, 0.4);
+    color: #fff;
+    cursor: default;
+}
+
+body.role-reader .phone-preview-container,
+body.role-reader .item-reel-wrapper {
+    pointer-events: auto;
+}
+
 
 
 /* =========================================

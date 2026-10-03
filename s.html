@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Follow Us</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #101a2a;
+        }
+
+        /* =========================
+           FOLLOW US SECTION
+        ========================= */
+
+        .follow-section {
+            width: 100%;
+            min-height: 450px;
+            padding: 35px 7%;
+            background: #101a2a;
+        }
+
+        /* Heading */
+
+        .follow-section h1 {
+            color: #ffffff;
+            font-size: 58px;
+            font-weight: 600;
+            margin-bottom: 95px;
+        }
+
+        /* Icons row */
+
+        .social-icons {
+            display: flex;
+            align-items: center;
+            gap: 52px;
+        }
+
+        /* =========================
+           SOCIAL BUTTON
+        ========================= */
+
+        .social-link {
+            width: 160px;
+            height: 160px;
+
+            border-radius: 50%;
+
+            background: #202d41;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+
+            transition:
+                transform 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            background: #29384e;
+        }
+
+        /* =========================
+           STORAGGE SVG
+        ========================= */
+
+        .storagge-svg {
+            width: 90px;
+            height: 90px;
+
+            display: block;
+
+            /*
+             * Important:
+             * SVG itself is centered by the parent flex.
+             */
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .follow-section {
+                padding: 30px;
+            }
+
+            .follow-section h1 {
+                font-size: 42px;
+                margin-bottom: 55px;
+            }
+
+            .social-icons {
+                gap: 25px;
+            }
+
+            .social-link {
+                width: 120px;
+                height: 120px;
+            }
+
+            .storagge-svg {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="follow-section">
+
+        <h1>Follow Us</h1>
+
+        <div class="social-icons">
+
+            <!-- =========================
+                 STORAGGE PROFILE
+            ========================== -->
+
+            <a
+                class="social-link"
+                href="https://www.storagge.in/?tab=connections&u=storagge"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Storagge"
+            >
+
+                <svg
+                    class="storagge-svg"
+                    viewBox="431 305 742 948"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid meet"
+                    aria-hidden="true"
+                >
+
+                    <!-- Storagge S Logo -->
+
+                    <path
+                        fill="#ED1118"
+                        d="
+                        M1170 305
+                        L731 306
+                        L646 325
+                        L564 368
+                        L518 408
+                        L475 463
+                        L448 515
+                        L428 586
+                        L432 692
+                        L481 799
+                        L549 868
+                        L624 908
+                        L705 926
+                        L851 927
+                        L625 704
+                        L608 654
+                        L620 596
+                        L659 551
+                        L721 525
+                        L999 525
+                        Z
+
+                        M1119 754
+                        L1057 692
+                        L975 651
+                        L914 638
+                        L753 636
+                        L972 848
+                        L994 908
+                        L983 959
+                        L943 1008
+                        L894 1034
+                        L602 1038
+                        L431 1253
+                        L883 1251
+                        L963 1231
+                        L1037 1191
+                        L1077 1157
+                        L1122 1101
+                        L1151 1045
+                        L1168 986
+                        L1173 912
+                        L1166 862
+                        L1145 799
+                        Z
+                        "
+                    />
+
+                </svg>
+
+            </a>
+
+        </div>
+
+    </section>
+
+</body>
+</html>

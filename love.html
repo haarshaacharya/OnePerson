@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Love Animation</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #070914;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Main countdown text */
+#mainText {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: clamp(120px, 18vw, 300px);
+    font-weight: 900;
+    letter-spacing: 5px;
+
+    text-shadow:
+        0 0 8px white,
+        0 0 20px white,
+        0 0 40px rgba(255,255,255,.8);
+
+    opacity: 0;
+    transform: scale(.8);
+
+    pointer-events: none;
+}
+
+#mainText.show {
+    animation: pop .9s ease forwards;
+}
+
+@keyframes pop {
+    0% {
+        opacity: 0;
+        transform: scale(.6);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+
+    70% {
+        transform: scale(.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Final message */
+#loveMessage {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    color: white;
+    text-align: center;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+#loveMessage.show {
+    animation: finalAppear 1.5s ease forwards;
+}
+
+#loveText {
+    font-size: clamp(20px, 3vw, 42px);
+    font-weight: bold;
+
+    color: white;
+
+    text-shadow:
+        0 0 5px white,
+        0 0 15px #ff4fa3,
+        0 0 30px #ff4fa3;
+}
+
+@keyframes finalAppear {
+    from {
+        opacity: 0;
+        transform: scale(.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div id="mainText"></div>
+
+<div id="loveMessage">
+    <div id="loveText">I Love ❤️ You </div>
+</div>
+
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const mainText = document.getElementById("mainText");
+const loveMessage = document.getElementById("loveMessage");
+
+let W, H;
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+
+/* =========================================================
+   FALLING BACKGROUND CHARACTERS
+========================================================= */
+
+const characters = " ILOVEYOU♡♥";
+
+let drops = [];
+
+function createDrops() {
+
+    drops = [];
+
+    const count = Math.floor(W / 12);
+
+    for (let i = 0; i < count; i++) {
+
+        drops.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+
+            speed: 0.5 + Math.random() * 2,
+
+            size: 8 + Math.random() * 6,
+
+            opacity: 0.15 + Math.random() * 0.6,
+
+            char:
+                characters[
+                    Math.floor(Math.random() * characters.length)
+                ]
+        });
+    }
+}
+
+createDrops();
+
+
+function drawBackground() {
+
+    ctx.fillStyle = "rgba(7, 9, 20, 0.20)";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.font = "bold 11px monospace";
+
+    for (let d of drops) {
+
+        ctx.fillStyle =
+            `rgba(255, 80, 160, ${d.opacity})`;
+
+        ctx.fillText(
+            d.char,
+            d.x,
+            d.y
+        );
+
+        d.y += d.speed;
+
+        if (d.y > H + 20) {
+
+            d.y = -20;
+
+            d.x = Math.random() * W;
+
+            d.char =
+                characters[
+                    Math.floor(Math.random() * characters.length)
+                ];
+        }
+    }
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+let particles = [];
+
+function clearParticles() {
+    particles = [];
+}
+
+
+/* Create text from particles */
+function createTextParticles(text) {
+
+    clearParticles();
+
+    const off = document.createElement("canvas");
+    const octx = off.getContext("2d");
+
+    off.width = W;
+    off.height = H;
+
+    const fontSize =
+        Math.min(W * 0.35, H * 0.45);
+
+    octx.font =
+        `900 ${fontSize}px Arial`;
+
+    octx.textAlign = "center";
+    octx.textBaseline = "middle";
+
+    octx.fillStyle = "white";
+
+    octx.fillText(
+        text,
+        W / 2,
+        H / 2
+    );
+
+    const data =
+        octx.getImageData(
+            0,
+            0,
+            W,
+            H
+        ).data;
+
+    const gap = Math.max(5, Math.floor(W / 220));
+
+    for (
+        let y = 0;
+        y < H;
+        y += gap
+    ) {
+
+        for (
+            let x = 0;
+            x < W;
+            x += gap
+        ) {
+
+            const index =
+                (y * W + x) * 4;
+
+            if (data[index + 3] > 100) {
+
+                particles.push({
+
+                    x:
+                        W / 2 +
+                        (Math.random() - .5) * W,
+
+                    y:
+                        H / 2 +
+                        (Math.random() - .5) * H,
+
+                    targetX: x,
+                    targetY: y,
+
+                    size:
+                        2 + Math.random() * 2.5,
+
+                    opacity: 0,
+
+                    delay:
+                        Math.random() * 30
+                });
+            }
+        }
+    }
+}
+
+
+/* Create heart shape */
+function createHeartParticles() {
+
+    clearParticles();
+
+    const scale =
+        Math.min(W, H) / 42;
+
+    for (
+        let i = 0;
+        i < 1500;
+        i++
+    ) {
+
+        const t =
+            Math.random() * Math.PI * 2;
+
+        const fill =
+            Math.pow(Math.random(), .55);
+
+        const x =
+            16 *
+            Math.pow(Math.sin(t), 3);
+
+        const y =
+            -(13 * Math.cos(t)
+            - 5 * Math.cos(2 * t)
+            - 2 * Math.cos(3 * t)
+            - Math.cos(4 * t));
+
+        const targetX =
+            W / 2 +
+            x * scale * fill;
+
+        const targetY =
+            H / 2 +
+            y * scale * fill;
+
+        particles.push({
+
+            x:
+                W / 2 +
+                (Math.random() - .5) * W,
+
+            y:
+                H / 2 +
+                (Math.random() - .5) * H,
+
+            targetX,
+            targetY,
+
+            size:
+                1.5 + Math.random() * 3,
+
+            opacity: 0,
+
+            delay:
+                Math.random() * 80
+        });
+    }
+}
+
+
+/* =========================================================
+   DRAW PARTICLES
+========================================================= */
+
+function drawParticles() {
+
+    for (let p of particles) {
+
+        if (p.delay > 0) {
+
+            p.delay--;
+
+            continue;
+        }
+
+        p.x +=
+            (p.targetX - p.x) * 0.055;
+
+        p.y +=
+            (p.targetY - p.y) * 0.055;
+
+        p.opacity +=
+            (1 - p.opacity) * 0.08;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            `rgba(255, ${p.targetX > W/2 ? 90 : 130}, 180, ${p.opacity})`;
+
+        ctx.shadowBlur = 10;
+
+        ctx.shadowColor =
+            "rgba(255,70,160,.8)";
+
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+    }
+}
+
+
+/* =========================================================
+   HEART SMALL FLOATING PARTICLES
+========================================================= */
+
+let tinyHearts = [];
+
+function createTinyHearts() {
+
+    tinyHearts = [];
+
+    for (let i = 0; i < 60; i++) {
+
+        tinyHearts.push({
+
+            x: Math.random() * W,
+
+            y: H + Math.random() * H,
+
+            speed:
+                .4 + Math.random() * 1.2,
+
+            size:
+                8 + Math.random() * 12,
+
+            opacity:
+                .2 + Math.random() * .7
+        });
+    }
+}
+
+createTinyHearts();
+
+
+function drawTinyHearts() {
+
+    for (let h of tinyHearts) {
+
+        ctx.font =
+            `${h.size}px Arial`;
+
+        ctx.fillStyle =
+            `rgba(255,80,160,${h.opacity})`;
+
+        ctx.fillText(
+            "♥",
+            h.x,
+            h.y
+        );
+
+        h.y -= h.speed;
+
+        if (h.y < -30) {
+
+            h.y =
+                H + Math.random() * 100;
+
+            h.x =
+                Math.random() * W;
+        }
+    }
+}
+
+
+/* =========================================================
+   ANIMATION LOOP
+========================================================= */
+
+function animate() {
+
+    drawBackground();
+
+    drawParticles();
+
+    if (loveMessage.classList.contains("show")) {
+
+        drawTinyHearts();
+
+    }
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+function showNumber(number, duration) {
+
+    clearParticles();
+
+    mainText.innerHTML = number;
+
+    mainText.classList.remove("show");
+
+    void mainText.offsetWidth;
+
+    mainText.classList.add("show");
+
+    setTimeout(() => {
+
+        mainText.classList.remove("show");
+
+    }, duration - 200);
+}
+
+
+/* =========================================================
+   SEQUENCE
+========================================================= */
+
+setTimeout(() => {
+
+    createTextParticles("3");
+
+}, 300);
+
+
+setTimeout(() => {
+
+    createTextParticles("3");
+
+}, 400);
+
+
+/* 3 */
+setTimeout(() => {
+
+    mainText.style.display = "none";
+
+    createTextParticles("3");
+
+}, 500);
+
+
+/* 2 */
+setTimeout(() => {
+
+    createTextParticles("2");
+
+}, 2500);
+
+
+/* YOU */
+setTimeout(() => {
+
+    createTextParticles("YOU");
+
+}, 4500);
+
+
+/* HEART */
+setTimeout(() => {
+
+    createHeartParticles();
+
+}, 7000);
+
+
+/* FINAL MESSAGE */
+setTimeout(() => {
+
+    loveMessage.classList.add("show");
+
+}, 8200);
+
+</script>
+
+</body>
+</html>

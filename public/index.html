@@ -61,11 +61,21 @@
 
             <div class="divider"></div>
 
+            <!-- ACCOUNT SWITCHER TABS -->
+            <div class="account-tabs">
+                <button type="button" class="account-tab active" data-role="editor" id="tabEditor">
+                    <span class="tab-badge-icon">👑</span>
+                    <span class="tab-label">Editor</span>
+                </button>
+                <button type="button" class="account-tab" data-role="reader" id="tabReader">
+                    <span class="tab-badge-icon">📖</span>
+                    <span class="tab-label">Reader</span>
+                </button>
+            </div>
 
-            <p class="hint">
-                Not everything on the internet is meant for everyone.
+            <p class="account-role-desc" id="accountRoleDesc">
+                👑 <strong>Editor:</strong> Full access to add, edit notes, photos & customize diary.
             </p>
-
 
             <!-- PASSWORD BOX -->
             <div class="password-box">
@@ -73,7 +83,7 @@
                 <input
                     type="password"
                     id="password"
-                    placeholder="Enter the secret key..."
+                    placeholder="Enter Editor Key..."
                     autocomplete="off"
                 >
 
@@ -144,9 +154,12 @@
                 ❤️
             </div>
 
-            <h1 class="welcome-heart-title">
+            <h1 class="welcome-heart-title" id="welcomeHeartTitle">
                 Welcome My Heart ❤️
             </h1>
+            <p class="welcome-heart-subtitle" id="welcomeHeartSubtitle">
+                Opening our private memories...
+            </p>
 
         </div>
 
@@ -210,7 +223,8 @@
                 <header class="diary-header-bar">
                     <div class="header-left">
                         <span class="diary-logo-text">📖 Our Story</span>
-                        <div class="view-mode-pill">
+                        <span class="role-badge" id="roleBadge">👑 Editor Mode</span>
+                        <div class="view-mode-pill" id="viewModePill">
                             <button id="modeToggleBtn" class="mode-toggle-btn active" title="Switch between Read and Decorate mode">
                                 ✨ Decorate Mode
                             </button>
@@ -239,6 +253,9 @@
 
                         <!-- Close Book Button -->
                         <button id="closeBookBtn" class="close-book-btn" title="Close Diary">📕 Close</button>
+
+                        <!-- Lock Website / Logout Button -->
+                        <button id="lockWebsiteBtn" class="lock-site-btn" title="Lock & Return to Login Screen">🔒 Lock</button>
                     </div>
                 </header>
 
