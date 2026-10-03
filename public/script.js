@@ -8,39 +8,8 @@ const secretWebsite = document.getElementById("secretWebsite");
 const container = document.querySelector(".container");
 
 // Role state: 'editor' | 'reader'
-let currentUserRole = sessionStorage.getItem("user_role") || "editor";
-let selectedRoleTab = "editor";
+let currentUserRole = sessionStorage.getItem("user_role") || null;
 
-// Account Switcher Tabs
-const tabEditor = document.getElementById("tabEditor");
-const tabReader = document.getElementById("tabReader");
-const accountRoleDesc = document.getElementById("accountRoleDesc");
-
-function setAccountTab(role) {
-    selectedRoleTab = role;
-    if (role === "editor") {
-        tabEditor?.classList.add("active");
-        tabReader?.classList.remove("active");
-        if (passwordInput) passwordInput.placeholder = "Enter Editor Key...";
-        if (accountRoleDesc) {
-            accountRoleDesc.innerHTML = '👑 <strong>Editor:</strong> Full access to add, edit notes, photos & customize diary.';
-        }
-    } else {
-        tabReader?.classList.add("active");
-        tabEditor?.classList.remove("active");
-        if (passwordInput) passwordInput.placeholder = "Enter Reader Key...";
-        if (accountRoleDesc) {
-            accountRoleDesc.innerHTML = '📖 <strong>Reader:</strong> Read-only access to view & explore all memories.';
-        }
-    }
-}
-
-if (tabEditor) {
-    tabEditor.addEventListener("click", () => setAccountTab("editor"));
-}
-if (tabReader) {
-    tabReader.addEventListener("click", () => setAccountTab("reader"));
-}
 
 if (unlockBtn) {
     unlockBtn.addEventListener("click", checkPassword);
@@ -67,15 +36,14 @@ async function checkPassword() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                password: enteredPassword,
-                role: selectedRoleTab
+                password: enteredPassword
             })
         });
 
         const data = await response.json();
 
         if (data.success) {
-            currentUserRole = data.role || selectedRoleTab;
+            currentUserRole = data.role;
             sessionStorage.setItem("user_role", currentUserRole);
             if (currentUserRole === "editor") {
                 sessionStorage.setItem("editor_key", enteredPassword);
@@ -88,12 +56,12 @@ async function checkPassword() {
     } catch (error) {
         console.warn("API request failed or running offline, checking fallback passwords:", error);
         const passClean = enteredPassword.trim().toLowerCase();
-        if (passClean === "sanu16") {
+        if (passClean === "haarsh20") {
             currentUserRole = "editor";
             sessionStorage.setItem("user_role", "editor");
             sessionStorage.setItem("editor_key", enteredPassword);
             unlockWebsite("editor");
-        } else if (passClean === "reader16" || passClean === "read123" || passClean === "love16") {
+        } else if (passClean === "sanu16") {
             currentUserRole = "reader";
             sessionStorage.setItem("user_role", "reader");
             unlockWebsite("reader");
