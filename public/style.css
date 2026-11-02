@@ -411,26 +411,28 @@ body.normal-cursor-mode a {
 
 .lock-card {
     width: 100%;
-    max-width: 520px;
+    max-width: 490px;
 
     text-align: center;
 
-    padding: 55px 40px;
+    padding: 50px 36px 42px;
 
     background:
-        rgba(255,255,255,.04);
+        linear-gradient(165deg, rgba(32, 18, 48, 0.72) 0%, rgba(16, 9, 26, 0.85) 100%);
 
     border:
-        1px solid rgba(255,255,255,.12);
+        1px solid rgba(255, 255, 255, 0.15);
 
-    border-radius: 25px;
+    border-radius: 30px;
 
     backdrop-filter:
-        blur(20px);
+        blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
 
     box-shadow:
         0 30px 80px rgba(0,0,0,.7),
-        0 0 60px rgba(139,92,246,.08);
+        0 0 60px rgba(168, 85, 247, 0.16),
+        inset 0 1px 2px rgba(255, 255, 255, 0.22);
 
     animation:
         appear 1.2s ease;
@@ -455,6 +457,35 @@ body.normal-cursor-mode a {
 /* =========================================
    LOCK ICON
 ========================================= */
+
+.lock-icon-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255, 42, 133, 0.28) 0%, rgba(139, 92, 246, 0.12) 65%, transparent 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 35px rgba(255, 42, 133, 0.32), inset 0 0 15px rgba(255, 255, 255, 0.12);
+    margin-bottom: 20px;
+    animation: floating 3.2s ease-in-out infinite;
+}
+
+.lock-aura {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 117, 140, 0.4);
+    animation: auraSpin 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes auraSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
 .lock-icon {
     font-size: 55px;
@@ -483,6 +514,43 @@ body.normal-cursor-mode a {
 /* =========================================
    TEXT
 ========================================= */
+
+.access-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3.5px;
+    color: #fbcfe8;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.access-pill .pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff2a85;
+    box-shadow: 0 0 10px #ff2a85;
+}
+
+.lock-title {
+    font-family: "Playfair Display", serif;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ffffff 35%, #ffd1e3 70%, #d8b4fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 20px rgba(255, 42, 133, 0.22));
+}
 
 .small-text {
     font-size: 11px;
@@ -532,6 +600,7 @@ h1 {
     font-size: 13px;
 
     color: #777;
+}
 
 /* =========================================
    ACCOUNT TABS & ROLE SELECTOR
@@ -612,6 +681,255 @@ h1 {
 
 .password-box {
     display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.25),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.input-wrapper:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.input-wrapper:focus-within {
+    border-color: #ff2a85;
+    background: rgba(255, 255, 255, 0.09);
+    box-shadow:
+        0 0 25px rgba(255, 42, 133, 0.35),
+        0 0 50px rgba(139, 92, 246, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.input-icon {
+    padding-left: 18px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    pointer-events: none;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+}
+
+.input-wrapper input {
+    flex: 1;
+    width: 100%;
+    padding: 16px 12px 16px 12px;
+    border-radius: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #ffffff;
+    outline: none !important;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-align: left !important;
+    box-shadow: none !important;
+}
+
+.input-wrapper input::placeholder {
+    color: rgba(255, 255, 255, 0.42);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+}
+
+.toggle-password-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 16px;
+    margin-right: 4px;
+    cursor: pointer;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+}
+
+.toggle-password-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.unlock-btn {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 18px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #ff2a85 0%, #a855f7 50%, #6366f1 100%);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    box-shadow:
+        0 12px 30px rgba(255, 42, 133, 0.42),
+        0 4px 15px rgba(139, 92, 246, 0.32);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.unlock-btn:hover {
+    background-position: 100% 50%;
+    transform: translateY(-3px) scale(1.015);
+    box-shadow:
+        0 18px 42px rgba(255, 42, 133, 0.6),
+        0 8px 25px rgba(139, 92, 246, 0.45);
+}
+
+.unlock-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow:
+        0 6px 20px rgba(255, 42, 133, 0.35);
+}
+
+.btn-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+    transform: skewX(-25deg);
+    transition: 0.65s ease;
+    pointer-events: none;
+}
+
+.unlock-btn:hover .btn-shimmer {
+    left: 140%;
+}
+
+.lock-secure-note {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    letter-spacing: 0.2px;
+}
+
+.lock-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    display: inline-block;
+}
+
+/* Shake on wrong password */
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    15%, 45%, 75% { transform: translateX(-8px); }
+    30%, 60%, 90% { transform: translateX(8px); }
+}
+
+.lock-card.shake {
+    animation: shakeError 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: rgba(255, 77, 109, 0.7) !important;
+    box-shadow:
+        0 35px 85px rgba(0, 0, 0, 0.8),
+        0 0 50px rgba(255, 77, 109, 0.45) !important;
+}
+
+/* Ambient Music Badge */
+.ambient-music-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(18, 10, 30, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 30px;
+    padding: 8px 18px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #fbcfe8;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 42, 133, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    margin-top: 22px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.ambient-music-badge:hover {
+    background: rgba(30, 16, 50, 0.85);
+    border-color: rgba(255, 42, 133, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 42, 133, 0.3);
+}
+
+.music-wave-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 14px;
+}
+
+.music-wave-bars span {
+    display: inline-block;
+    width: 3px;
+    height: 4px;
+    background: #ff2a85;
+    border-radius: 2px;
+    transition: height 0.2s;
+}
+
+.ambient-music-badge.playing .music-wave-bars span:nth-child(1) {
+    animation: barWave 1s ease-in-out infinite alternate;
+}
+.ambient-music-badge.playing .music-wave-bars span:nth-child(2) {
+    animation: barWave 0.7s ease-in-out infinite alternate 0.2s;
+}
+.ambient-music-badge.playing .music-wave-bars span:nth-child(3) {
+    animation: barWave 1.2s ease-in-out infinite alternate 0.4s;
+}
+.ambient-music-badge.playing .music-wave-bars span:nth-child(4) {
+    animation: barWave 0.85s ease-in-out infinite alternate 0.1s;
+}
+
+@keyframes barWave {
+    0% { height: 4px; }
+    100% { height: 14px; }
+}
+
+.password-box-old {
+    display: flex;
 
     flex-direction: column;
 
@@ -627,7 +945,7 @@ input {
     border-radius: 12px;
 
     border:
-        1px solid rgba(255,255,255,.12);
+        1px solid rgba(255, 255, 255, 0.15);
 
     background:
         rgba(255,255,255,.05);
@@ -734,7 +1052,7 @@ button:hover {
     border:
         1px solid rgba(255,255,255,.1);
 
-    border-radius: 25px;
+    border-radius: 30px;
 
     box-shadow:
         0 30px 100px rgba(0,0,0,.8);
@@ -2516,7 +2834,7 @@ body.role-reader .item-reel-wrapper {
 
 .modal-submit-btn {
     padding: 12px 28px;
-    border-radius: 25px;
+    border-radius: 30px;
     background: linear-gradient(135deg, #ff2a85, #ff758c);
     border: none;
     color: #fff;
@@ -2538,7 +2856,7 @@ body.role-reader .item-reel-wrapper {
 ========================================= */
 
 .modal-card-reel {
-    max-width: 520px;
+    max-width: 490px;
     max-height: 90vh;
     overflow-y: auto;
 }

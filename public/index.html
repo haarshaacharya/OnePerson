@@ -36,26 +36,31 @@
 
     <main class="container">
 
-        <div class="lock-card">
+        <div class="lock-card" id="mainLockCard">
 
             <!-- LOCK ICON -->
-            <div class="lock-icon">
-                🔐
+            <div class="lock-icon-badge">
+                <span class="lock-icon">🔐</span>
+                <span class="lock-aura"></span>
             </div>
 
 
-            <p class="small-text">
-                PRIVATE ACCESS
+            <!-- Removed private access pill as requested
+                <span class="pill-dot"></span>
+                <span>PRIVATE ACCESS</span>
+                <span class="pill-dot"></span>
             </p>
 
 
-            <h1>
+-->
+
+            <h1 class="lock-title">
                 Something is waiting...
             </h1>
 
 
             <p class="description">
-                But not everyone is supposed to see it.
+                Not for everyone 
             </p>
 
 
@@ -64,19 +69,41 @@
             <!-- PASSWORD BOX -->
             <div class="password-box">
 
+                <div class="input-wrapper" id="inputWrapper">
+                    <span class="input-icon">🔑</span>
+
                 <input
                     type="password"
                     id="password"
-                    placeholder="Enter your secret key... 🔑"
+                    placeholder="Enter your secret key..."
                     autocomplete="off"
                 >
+                    <button type="button" id="togglePasswordBtn" class="toggle-password-btn" title="Show / Hide password" aria-label="Toggle password visibility">
+                        <span id="eyeIcon">👁️</span>
+                    </button>
+                </div>
 
-                <button id="unlockBtn">
-                    UNLOCK 🔓
+                <button id="unlockBtn" class="unlock-btn">
+                    <span class="btn-text">UNLOCK ACCESS</span>
+                    <span class="btn-icon">🔓</span>
+                    <span class="btn-shimmer"></span>
+                </button>
+                <!--
+                    <!-- removed note -->
+                </p>
+                -->
                 </button>
 
             </div>
 
+        </div>
+
+        <!-- Removed ambient badge
+        <div id="ambientMusicBadge" class="ambient-music-badge">
+            <span class="music-wave-bars">
+                <span></span><span></span><span></span><span></span>
+            </span>
+-->
         </div>
 
     </main>
@@ -95,7 +122,7 @@
             </div>
 
 
-            <p class="small-text">
+            <!-- Removed private access pill as requested
                 ACCESS RESTRICTED
             </p>
 
@@ -626,7 +653,7 @@
     </div>
 
     <!-- AUDIO ELEMENT FOR BACKGROUND MUSIC -->
-    <audio id="bgMusicAudio" loop preload="auto"></audio>
+    <audio id="bgMusicAudio" src="romantic-music.mp3" loop preload="auto" playsinline></audio>
 
     <!-- JAVASCRIPT -->
     <script src="script.js?v=2.5"></script>

@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
-
 const fs = require("fs");
 
 const app = express();
@@ -11,6 +10,35 @@ const PORT = process.env.PORT || 3000;
 // Allow larger payload for saving photos/diary content
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+// 🎵 Sync and serve user uploaded MP3 romantic music
+const uploadedAudioPath = "C:/Users/Harssh Acharya/.gemini/antigravity/brain/434b40c7-37b4-4f3f-9c62-07367e887961/.user_uploaded/uploaded_media_1793601551832.mp3";
+const publicAudioPath = path.join(__dirname, "public", "romantic-music.mp3");
+
+function syncUploadedAudio() {
+    try {
+        if (fs.existsSync(uploadedAudioPath)) {
+            if (!fs.existsSync(publicAudioPath) || fs.statSync(publicAudioPath).size === 0) {
+                fs.copyFileSync(uploadedAudioPath, publicAudioPath);
+                console.log("🎵 Uploaded romantic music synced to public/romantic-music.mp3");
+            }
+        }
+    } catch (err) {
+        console.warn("Audio sync error:", err);
+    }
+}
+syncUploadedAudio();
+
+// Dedicated audio route (supports range requests for smooth looping)
+app.get("/romantic-music.mp3", (req, res) => {
+    if (fs.existsSync(publicAudioPath)) {
+        return res.sendFile(publicAudioPath);
+    } else if (fs.existsSync(uploadedAudioPath)) {
+        return res.sendFile(uploadedAudioPath);
+    } else {
+        return res.status(404).send("Audio file not found");
+    }
+});
 
 // Serve public folder
 app.use(express.static(path.join(__dirname, "public")));
@@ -124,4 +152,3 @@ app.listen(PORT, () => {
     console.log("Private website running!");
     console.log("Open: http://localhost:" + PORT);
 });
-

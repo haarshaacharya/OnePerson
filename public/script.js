@@ -10,6 +10,35 @@ const container = document.querySelector(".container");
 // Role state: 'editor' | 'reader'
 let currentUserRole = sessionStorage.getItem("user_role") || null;
 
+// Password visibility toggle (Eye button)
+const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+const eyeIcon = document.getElementById("eyeIcon");
+
+if (togglePasswordBtn && passwordInput) {
+    togglePasswordBtn.addEventListener("click", () => {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            if (eyeIcon) eyeIcon.textContent = "🙈";
+            togglePasswordBtn.title = "Hide secret key";
+        } else {
+            passwordInput.type = "password";
+            if (eyeIcon) eyeIcon.textContent = "👁️";
+            togglePasswordBtn.title = "Show secret key";
+        }
+        passwordInput.focus();
+    });
+}
+
+function triggerShakeLockCard() {
+    const lockCard = document.getElementById("mainLockCard") || document.querySelector(".lock-card");
+    if (lockCard) {
+        lockCard.classList.remove("shake");
+        void lockCard.offsetWidth;
+        lockCard.classList.add("shake");
+        setTimeout(() => lockCard.classList.remove("shake"), 500);
+    }
+}
+
 
 if (unlockBtn) {
     unlockBtn.addEventListener("click", checkPassword);
@@ -23,11 +52,16 @@ if (passwordInput) {
     });
 }
 
+function setUnlockBtn(text, icon = "🔓") {
+    if (!unlockBtn) return;
+    unlockBtn.innerHTML = `<span class="btn-text">${text}</span><span class="btn-icon">${icon}</span><span class="btn-shimmer"></span>`;
+}
+
 async function checkPassword() {
     const enteredPassword = passwordInput.value;
     if (!enteredPassword) return;
 
-    unlockBtn.textContent = "CHECKING...";
+    setUnlockBtn("CHECKING...", "⏳");
 
     try {
         const response = await fetch("/api/unlock", {
@@ -51,7 +85,7 @@ async function checkPassword() {
             unlockWebsite(currentUserRole);
         } else {
             showRestrictedPopup();
-            unlockBtn.textContent = "UNLOCK 🔓";
+            setUnlockBtn("UNLOCK ACCESS", "🔓");
         }
     } catch (error) {
         console.warn("API request failed or running offline, checking fallback passwords:", error);
@@ -67,7 +101,7 @@ async function checkPassword() {
             unlockWebsite("reader");
         } else {
             showRestrictedPopup();
-            unlockBtn.textContent = "UNLOCK 🔓";
+            setUnlockBtn("UNLOCK ACCESS", "🔓");
         }
     }
 
@@ -75,6 +109,7 @@ async function checkPassword() {
 }
 
 function showRestrictedPopup() {
+    triggerShakeLockCard();
     popup.classList.remove("hidden");
 }
 
@@ -93,7 +128,8 @@ function unlockWebsite(role = currentUserRole) {
     }
 
     if (unlockBtn) {
-        unlockBtn.textContent = "UNLOCKED ❤️";
+        setUnlockBtn("UNLOCKED ACCESS", "❤️");
+        playRomanticMusic();
         unlockBtn.style.background = "linear-gradient(135deg, #ff2a85, #ff758c)";
         unlockBtn.style.boxShadow = "0 0 35px rgba(255, 42, 133, 0.8)";
     }
@@ -207,7 +243,7 @@ function lockWebsite() {
     }
 
     if (unlockBtn) {
-        unlockBtn.textContent = "UNLOCK 🔓";
+        setUnlockBtn("UNLOCK ACCESS", "🔓");
         unlockBtn.style.background = "";
         unlockBtn.style.boxShadow = "";
     }
@@ -1246,11 +1282,11 @@ let activePageElement = null;
 
 // Audio System State
 let isMusicPlaying = false;
-let musicVolume = 0.7;
+let musicVolume = 1.0;
 let audioCtx = null;
 let synthGainNode = null;
 let synthInterval = null;
-let currentMusicType = "synth"; // 'synth' or 'audio'
+let currentMusicType = "audio"; // Default to uploaded MP3
 
 // Diary Pages Data Structure
 const DEFAULT_DIARY_DATA = {
@@ -2899,10 +2935,114 @@ function setupDiaryListeners() {
    🎵 ROMANTIC AUDIO & BACKGROUND MUSIC SYNTHESIZER
 ------------------------------------------------------------- */
 
+function updateAmbientBadge(isPlaying) {
+    const badge = document.getElementById("ambientMusicBadge");
+    const badgeText = document.getElementById("musicBadgeText");
+    if (!badge || !badgeText) return;
+
+    if (isPlaying) {
+        badge.classList.add("playing");
+        badgeText.textContent = "🎵 Romantic Melody: 100% Volume (Loop Active) ❤️";
+    } else {
+        badge.classList.remove("playing");
+        badgeText.textContent = "🔊 Tap anywhere to enable sound (100% Volume)";
+    }
+}
+
+function attemptAutoplay(audioEl) {
+    if (!audioEl) return;
+    audioEl.volume = 1.0;
+    audioEl.muted = false;
+    audioEl.loop = true;
+
+    const playPromise = audioEl.play();
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                isMusicPlaying = true;
+                currentMusicType = "audio";
+                updateMusicDiscState();
+                updateAmbientBadge(true);
+            })
+            .catch(() => {
+                isMusicPlaying = false;
+                updateAmbientBadge(false);
+
+                const unlockOnInteraction = () => {
+                    audioEl.volume = 1.0;
+                    audioEl.muted = false;
+                    audioEl.play().then(() => {
+                        isMusicPlaying = true;
+                        currentMusicType = "audio";
+                        updateMusicDiscState();
+                        updateAmbientBadge(true);
+                    }).catch(e => console.log("Unlock audio error:", e));
+
+                    window.removeEventListener("pointerdown", unlockOnInteraction);
+                    window.removeEventListener("click", unlockOnInteraction);
+                    window.removeEventListener("keydown", unlockOnInteraction);
+                    window.removeEventListener("touchstart", unlockOnInteraction);
+                };
+
+                window.addEventListener("pointerdown", unlockOnInteraction, { once: true });
+                window.addEventListener("click", unlockOnInteraction, { once: true });
+                window.addEventListener("keydown", unlockOnInteraction, { once: true });
+                window.addEventListener("touchstart", unlockOnInteraction, { once: true });
+            });
+    }
+}
+
 function setupAudioSystem() {
     const audioEl = document.getElementById("bgMusicAudio");
     if (audioEl) {
-        audioEl.volume = musicVolume;
+        if (!audioEl.getAttribute("src")) {
+            audioEl.src = "romantic-music.mp3";
+        }
+        audioEl.volume = 1.0;
+        audioEl.muted = false;
+        audioEl.loop = true;
+
+        audioEl.addEventListener("ended", () => {
+            audioEl.currentTime = 0;
+            audioEl.play().catch(() => {});
+        });
+
+        audioEl.addEventListener("play", () => {
+            isMusicPlaying = true;
+            updateAmbientBadge(true);
+            updateMusicDiscState();
+        });
+
+        audioEl.addEventListener("pause", () => {
+            if (currentMusicType === "audio") {
+                isMusicPlaying = false;
+                updateAmbientBadge(false);
+                updateMusicDiscState();
+            }
+        });
+
+        const ambientBadge = document.getElementById("ambientMusicBadge");
+        if (ambientBadge) {
+            ambientBadge.addEventListener("click", () => {
+                if (audioEl.paused) {
+                    audioEl.volume = 1.0;
+                    audioEl.muted = false;
+                    audioEl.play().then(() => {
+                        isMusicPlaying = true;
+                        currentMusicType = "audio";
+                        updateMusicDiscState();
+                        updateAmbientBadge(true);
+                    }).catch(e => console.log(e));
+                } else {
+                    audioEl.pause();
+                    isMusicPlaying = false;
+                    updateAmbientBadge(false);
+                    updateMusicDiscState();
+                }
+            });
+        }
+
+        attemptAutoplay(audioEl);
     }
 
     // Custom music file input
@@ -2950,7 +3090,71 @@ function playCustomAudioSrc(src) {
     const audioEl = document.getElementById("bgMusicAudio");
     if (audioEl) {
         audioEl.src = src;
-        audioEl.volume = musicVolume;
+        audioEl.volume = 1.0;
+        audioEl.muted = false;
+        audioEl.loop = true;
+        audioEl.play().then(() => {
+            isMusicPlaying = true;
+            currentMusicType = "audio";
+            updateMusicDiscState();
+            updateAmbientBadge(true);
+        }).catch(err => console.log("Audio playback waiting for gesture:", err));
+    }
+}
+
+function playCustomAudioSrcOld(src) {
+    stopRomanticSynth();
+    const audioEl = document.getElementById("bgMusicAudio");
+    if (audioEl) {
+        audioEl.src = src;
+        if (!audioEl.getAttribute("src")) {
+            audioEl.src = "romantic-music.mp3";
+        }
+        audioEl.volume = 1.0;
+        audioEl.muted = false;
+        audioEl.loop = true;
+
+        audioEl.addEventListener("ended", () => {
+            audioEl.currentTime = 0;
+            audioEl.play().catch(() => {});
+        });
+
+        audioEl.addEventListener("play", () => {
+            isMusicPlaying = true;
+            updateAmbientBadge(true);
+            updateMusicDiscState();
+        });
+
+        audioEl.addEventListener("pause", () => {
+            if (currentMusicType === "audio") {
+                isMusicPlaying = false;
+                updateAmbientBadge(false);
+                updateMusicDiscState();
+            }
+        });
+
+        const ambientBadge = document.getElementById("ambientMusicBadge");
+        if (ambientBadge) {
+            ambientBadge.addEventListener("click", () => {
+                if (audioEl.paused) {
+                    audioEl.volume = 1.0;
+                    audioEl.muted = false;
+                    audioEl.play().then(() => {
+                        isMusicPlaying = true;
+                        currentMusicType = "audio";
+                        updateMusicDiscState();
+                        updateAmbientBadge(true);
+                    }).catch(e => console.log(e));
+                } else {
+                    audioEl.pause();
+                    isMusicPlaying = false;
+                    updateAmbientBadge(false);
+                    updateMusicDiscState();
+                }
+            });
+        }
+
+        attemptAutoplay(audioEl);
         audioEl.play().then(() => {
             isMusicPlaying = true;
             currentMusicType = "audio";
@@ -2963,6 +3167,8 @@ function playRomanticMusic() {
     if (currentMusicType === "audio") {
         const audioEl = document.getElementById("bgMusicAudio");
         if (audioEl && audioEl.src) {
+            audioEl.volume = 1.0;
+            audioEl.muted = false;
             audioEl.play().catch(() => startRomanticSynthChords());
             isMusicPlaying = true;
             updateMusicDiscState();
