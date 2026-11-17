@@ -190,34 +190,39 @@ function unlockWebsite(role = currentUserRole) {
 }
 
 function applyRoleUI(role = currentUserRole) {
+    currentUserRole = role;
     const roleBadge = document.getElementById("roleBadge");
     const modeToggleBtn = document.getElementById("modeToggleBtn");
     const openDiaryWrapper = document.getElementById("openDiaryWrapper");
     const decorateToolbar = document.getElementById("decorateToolbar");
     const addPageBtn = document.getElementById("addPageBtn");
 
-    if (roleBadge) {
-        if (role === "editor") {
-            roleBadge.textContent = "👑 Editor Mode";
-            roleBadge.className = "role-badge badge-editor";
-        } else {
+    if (role === "reader") {
+        document.body.classList.add("role-reader");
+        document.body.classList.remove("role-editor");
+        if (diaryState) diaryState.isReadMode = true;
+        if (openDiaryWrapper) openDiaryWrapper.classList.add("read-mode");
+        if (decorateToolbar) {
+            decorateToolbar.style.display = "none";
+            decorateToolbar.style.visibility = "hidden";
+            decorateToolbar.style.opacity = "0";
+            decorateToolbar.style.pointerEvents = "none";
+        }
+        if (addPageBtn) addPageBtn.style.display = "none";
+        if (modeToggleBtn) modeToggleBtn.style.display = "none";
+        if (roleBadge) {
             roleBadge.textContent = "📖 Reader Mode";
             roleBadge.className = "role-badge badge-reader";
         }
-    }
-
-    if (role === "reader") {
-        if (diaryState) diaryState.isReadMode = true;
-        if (openDiaryWrapper) openDiaryWrapper.classList.add("read-mode");
-        if (decorateToolbar) decorateToolbar.style.display = "none";
-        if (addPageBtn) addPageBtn.style.display = "none";
-        if (modeToggleBtn) modeToggleBtn.style.display = "none";
     } else {
-        // EDITOR MODE: Always active decorating mode so all tools, stickers, reels & fonts are ready!
+        // EDITOR MODE: Haarsh20 only (Full creative tools active)
+        document.body.classList.add("role-editor");
+        document.body.classList.remove("role-reader");
         if (diaryState) diaryState.isReadMode = false;
         if (openDiaryWrapper) openDiaryWrapper.classList.remove("read-mode");
         if (decorateToolbar) {
             decorateToolbar.style.display = "flex";
+            decorateToolbar.style.visibility = "visible";
             decorateToolbar.style.opacity = "1";
             decorateToolbar.style.transform = "translateY(-50%)";
             decorateToolbar.style.pointerEvents = "auto";
@@ -228,6 +233,10 @@ function applyRoleUI(role = currentUserRole) {
             modeToggleBtn.textContent = "✨ Decorate Mode";
             modeToggleBtn.classList.add("active");
             modeToggleBtn.title = "Click to preview how Reader will see it";
+        }
+        if (roleBadge) {
+            roleBadge.textContent = "👑 Editor Mode";
+            roleBadge.className = "role-badge badge-editor";
         }
     }
 }
@@ -241,7 +250,8 @@ function lockWebsite() {
     const hintContainer = document.getElementById("passwordHintContainer");
     if (hintContainer) hintContainer.classList.add("hidden");
 
-    // Clear saved session role
+    // Clear saved session role completely
+    currentUserRole = null;
     sessionStorage.removeItem("user_role");
     sessionStorage.removeItem("editor_key");
 
@@ -1388,7 +1398,7 @@ const DEFAULT_DIARY_DATA = {
                     top: 68,
                     width: 76,
                     height: 22,
-                    content: "Tap any photo or text to resize, move, or style it! 🎬 Add reels, videos, music, and stickers anytime.",
+                    content: "Every second spent with you becomes my favorite memory. Forever and always, my love ❤️",
                     font: "'Dancing Script', cursive",
                     size: 19,
                     color: "#8c4456",
@@ -1757,7 +1767,7 @@ function saveDiaryToStorage(showNotice = false) {
         localStorage.setItem("love_diary_data", JSON.stringify(cleanState));
 
         // Sync with server API for multi-device support
-        const editorKey = sessionStorage.getItem("editor_key") || "sanu16";
+        const editorKey = sessionStorage.getItem("editor_key") || "";
         fetch("/api/diary", {
             method: "POST",
             headers: {
@@ -1838,8 +1848,8 @@ function openDiaryBook() {
         if (openWrapper) {
             openWrapper.classList.remove("hidden");
             if (closedBook) closedBook.classList.remove("is-opening");
-            renderCurrentPages();
             applyRoleUI(currentUserRole);
+            renderCurrentPages();
         }
     }, 900);
 }
@@ -2561,6 +2571,7 @@ function handlePointerUp() {
 }
 
 function selectItem(el) {
+    if (currentUserRole === "reader" || diaryState.isReadMode) return;
     deselectAllItems();
     selectedDiaryItem = el;
     el.classList.add("is-selected");
@@ -2575,6 +2586,7 @@ function deselectAllItems() {
 }
 
 function deleteDiaryItem(itemId, pageIndex) {
+    if (currentUserRole === "reader") return;
     const page = diaryState.pages[pageIndex];
     if (page) {
         page.items = page.items.filter(i => i.id !== itemId);
@@ -2605,6 +2617,7 @@ function pauseActivePageVideos() {
 ------------------------------------------------------------- */
 
 function openModal(modalId) {
+    if (currentUserRole === "reader") return;
     deselectAllItems();
     const modal = document.getElementById(modalId);
     if (modal) modal.classList.remove("hidden");
@@ -2962,6 +2975,7 @@ function setupStickerPicker() {
         btn.className = "sticker-pick-btn";
         btn.textContent = sticker;
         btn.onclick = () => {
+            if (currentUserRole === "reader") return;
             const targetSide = document.getElementById("modalStickerPageTarget")?.value || "left";
             const targetPageIndex = targetSide === "left"
                 ? diaryState.currentPagePair * 2

@@ -118,7 +118,7 @@ app.post("/api/diary", (req, res) => {
     const editorKey = req.headers["x-editor-key"] || req.body.editorKey;
     const adminPassword = process.env.ADMIN_PASSWORD || process.env.SECRET_PASSWORD || "Haarsh20";
 
-    if (!editorKey || editorKey !== adminPassword) {
+    if (!editorKey || String(editorKey).trim().toLowerCase() !== adminPassword.toLowerCase()) {
         return res.status(403).json({
             success: false,
             message: "Forbidden: Only Editor can save diary changes."

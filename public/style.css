@@ -3366,25 +3366,67 @@ body.role-reader .item-reel-wrapper {
 }
 
 /* =========================================
-   👑 EDITOR VS READER ROLES STYLING
+   👑 STRICT SEPARATION: EDITOR VS READER ROLES
 ========================================= */
 
-/* In Reader Mode, hide all editing buttons & toolbars */
-body.role-reader #modeToggleBtn,
-body.role-reader #addPageBtn,
-body.role-reader .decorate-toolbar {
+/* 1. BY DEFAULT: HIDE ALL EDITING TOOLS (Strict Read-Only) */
+#modeToggleBtn,
+#addPageBtn,
+#decorateToolbar,
+.item-quick-bar,
+.resize-handle {
     display: none !important;
 }
 
-/* In Editor Mode, show the Decorate Toolbar prominently */
-body.role-editor #openDiaryWrapper:not(.read-mode) .decorate-toolbar {
+/* 2. STRICT READER MODE (sanu16): View Only - ZERO Edit Controls */
+body.role-reader #modeToggleBtn,
+body.role-reader #addPageBtn,
+body.role-reader #decorateToolbar,
+body.role-reader .decorate-toolbar,
+body.role-reader .item-quick-bar,
+body.role-reader .resize-handle,
+body.role-reader .diary-modal {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body.role-reader .diary-item {
+    cursor: default !important;
+}
+
+body.role-reader .diary-item.is-selected {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+body.role-reader .item-text-content {
+    cursor: default !important;
+    user-select: text !important;
+    -webkit-user-modify: read-only !important;
+}
+
+body.role-reader .photo-caption-text {
+    cursor: default !important;
+    user-select: text !important;
+    -webkit-user-modify: read-only !important;
+}
+
+/* 3. STRICT EDITOR MODE (Haarsh20): Full Creative Editing Tools */
+body.role-editor:not(.role-reader) #addPageBtn {
+    display: inline-block !important;
+}
+
+body.role-editor:not(.role-reader) #modeToggleBtn {
+    display: inline-flex !important;
+}
+
+body.role-editor:not(.role-reader) #openDiaryWrapper:not(.read-mode) #decorateToolbar,
+body.role-editor:not(.role-reader) #openDiaryWrapper:not(.read-mode) .decorate-toolbar {
     display: flex !important;
     opacity: 1 !important;
     transform: translateY(-50%) !important;
     pointer-events: auto !important;
     visibility: visible !important;
-}
-
-body.role-editor #modeToggleBtn {
-    display: inline-flex !important;
 }
