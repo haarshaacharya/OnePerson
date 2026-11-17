@@ -64,9 +64,10 @@ app.post("/api/unlock", (req, res) => {
 
     const adminPassword = process.env.ADMIN_PASSWORD || process.env.SECRET_PASSWORD || "Haarsh20";
     const readerPassword = process.env.READER_PASSWORD || "sanu16";
+    const clean = String(enteredPassword).trim().toLowerCase();
 
     // 1. Check Editor / Admin Password
-    if (enteredPassword === adminPassword) {
+    if (clean === adminPassword.toLowerCase()) {
         return res.json({
             success: true,
             role: "editor",
@@ -74,8 +75,8 @@ app.post("/api/unlock", (req, res) => {
         });
     }
 
-    // 2. Check Reader Password
-    if (enteredPassword === readerPassword) {
+    // 2. Check Reader Password (supports sanu16, and example password aliu20)
+    if (clean === readerPassword.toLowerCase() || clean === "aliu20") {
         return res.json({
             success: true,
             role: "reader",

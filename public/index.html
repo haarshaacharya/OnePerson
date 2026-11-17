@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Dancing+Script:wght@400..700&family=Great+Vibes&family=Parisienne&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&family=Sacramento&family=Special+Elite&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=3.1">
+    <link rel="stylesheet" href="style.css?v=3.2">
 </head>
 
 <body>
@@ -44,25 +44,13 @@
                 <span class="lock-aura"></span>
             </div>
 
-
-            <!-- Removed private access pill as requested
-                <span class="pill-dot"></span>
-                <span>PRIVATE ACCESS</span>
-                <span class="pill-dot"></span>
-            </p>
-
-
--->
-
             <h1 class="lock-title">
                 Something is waiting...
             </h1>
 
-
             <p class="description">
-                Not for everyone 
+                Not for everyone
             </p>
-
 
             <div class="divider"></div>
 
@@ -71,13 +59,12 @@
 
                 <div class="input-wrapper" id="inputWrapper">
                     <span class="input-icon">🔑</span>
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your secret key..."
-                    autocomplete="off"
-                >
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your secret key..."
+                        autocomplete="off"
+                    >
                     <button type="button" id="togglePasswordBtn" class="toggle-password-btn" title="Show / Hide password" aria-label="Toggle password visibility">
                         <span id="eyeIcon">👁️</span>
                     </button>
@@ -88,21 +75,23 @@
                     <span class="btn-icon">🔓</span>
                     <span class="btn-shimmer"></span>
                 </button>
-                <!-- removed note -->
-                </p>
-        
-                </button>
+
+                <!-- PASSWORD HINT (Appears on wrong password) -->
+                <div id="passwordHintContainer" class="password-hint-container hidden">
+                    <div class="hint-header">
+                        <span class="hint-icon">💡</span>
+                        <span class="hint-label">Password Hint</span>
+                    </div>
+                    <p class="hint-rule">
+                        <code>'enter your name first three letters' + u + 'your birthdate only'</code>
+                    </p>
+                    <p class="hint-example">
+                        Example: <span class="hint-badge">aliu20</span>
+                    </p>
+                </div>
 
             </div>
 
-        </div>
-
-        <!-- Removed ambient badge
-        <div id="ambientMusicBadge" class="ambient-music-badge">
-            <span class="music-wave-bars">
-                <span></span><span></span><span></span><span></span>
-            </span>
--->
         </div>
 
     </main>
@@ -120,26 +109,26 @@
                 🔒
             </div>
 
-
-            <!-- Removed private access pill as requested
-                ACCESS RESTRICTED
-            </p>
-
-
             <h2>
                 Only For One Girl ❤️
             </h2>
-
 
             <p>
                 This website was created for only one special person.
             </p>
 
-
-            <p class="popup-message">
-                Some secrets are meant for only one person.
-            </p>
-
+            <div class="popup-hint-box">
+                <div class="hint-header">
+                    <span class="hint-icon">💡</span>
+                    <span class="hint-label">Password Hint</span>
+                </div>
+                <p class="hint-rule">
+                    <code>'enter your name first three letters' + u + 'your birthdate only'</code>
+                </p>
+                <p class="hint-example">
+                    Example: <span class="hint-badge">aliu20</span>
+                </p>
+            </div>
 
             <button id="closePopup">
                 I Understand
@@ -202,7 +191,7 @@
                                         <div class="golden-keyhole"></div>
                                     </div>
                                 </div>
-
+                                
                                 <h2 class="cover-title">Our Love Diary</h2>
                                 <p class="cover-subtitle">Forever & Always ❤️</p>
                                 <div class="cover-flourish">❦ ❧</div>
@@ -230,16 +219,6 @@
 
                 <!-- TOP CONTROL BAR -->
                 <header class="diary-header-bar">
-                    <div class="header-left">
-                        <span class="diary-logo-text">📖 Our Story</span>
-                        <span class="role-badge" id="roleBadge">👑 Editor Mode</span>
-                        <div class="view-mode-pill" id="viewModePill">
-                            <button id="modeToggleBtn" class="mode-toggle-btn active" title="Switch between Read and Decorate mode">
-                                ✨ Decorate Mode
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="header-center">
                         <button id="prevPageBtn" class="nav-btn" title="Previous Page">❮ Prev</button>
                         <span id="pageIndicator" class="page-indicator">Pages 1 - 2</span>
@@ -248,17 +227,10 @@
                     </div>
 
                     <div class="header-right">
-                        <!-- Music Player Widget -->
-                        <div class="music-widget">
-                            <button id="musicToggleBtn" class="music-disc-btn spinning" title="Toggle Romantic Music">
-                                <span class="disc-icon">💿</span>
-                                <span class="sound-wave">
-                                    <i></i><i></i><i></i><i></i>
-                                </span>
-                            </button>
-                            <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.7" title="Volume" class="vol-slider">
-                            <button id="openMusicModalBtn" class="music-settings-btn" title="Music Settings / Custom Song">🎵</button>
-                        </div>
+                        <!-- Mode Toggle Button (Active in Editor Mode, hidden in Reader Mode) -->
+                        <button id="modeToggleBtn" class="mode-toggle-btn active" title="Switch between Edit and Preview">
+                            ✨ Decorate Mode
+                        </button>
 
                         <!-- Close Book Button -->
                         <button id="closeBookBtn" class="close-book-btn" title="Close Diary">📕 Close</button>
@@ -543,7 +515,7 @@
 
                 <div class="control-row">
                     <label>Autoplay when page opens:</label>
-                    <input type="checkbox" id="modalReelAutoplay" checked>
+                    <input type="checkbox" id="modalReelAutoplay">
                 </div>
 
                 <div class="control-row">
@@ -651,11 +623,11 @@
         </div>
     </div>
 
-    <!-- AUDIO ELEMENT FOR BACKGROUND MUSIC -->
-    <audio id="bgMusicAudio" src="romantic-music.mp3" loop preload="auto" playsinline></audio>
+    <!-- AUDIO ELEMENT FOR BACKGROUND MUSIC (AUTOPLAY & 100% VOLUME & LOOP) -->
+    <audio id="bgMusicAudio" src="romantic-music.mp3" autoplay loop preload="auto" playsinline></audio>
 
     <!-- JAVASCRIPT -->
-    <script src="script.js?v=2.5"></script>
+    <script src="script.js?v=2.6"></script>
 
 </body>
 

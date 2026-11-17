@@ -95,7 +95,7 @@ async function checkPassword() {
             sessionStorage.setItem("user_role", "editor");
             sessionStorage.setItem("editor_key", enteredPassword);
             unlockWebsite("editor");
-        } else if (passClean === "sanu16") {
+        } else if (passClean === "sanu16" || passClean === "aliu20") {
             currentUserRole = "reader";
             sessionStorage.setItem("user_role", "reader");
             unlockWebsite("reader");
@@ -110,7 +110,13 @@ async function checkPassword() {
 
 function showRestrictedPopup() {
     triggerShakeLockCard();
-    popup.classList.remove("hidden");
+    const hintContainer = document.getElementById("passwordHintContainer");
+    if (hintContainer) {
+        hintContainer.classList.remove("hidden");
+    }
+    if (popup) {
+        popup.classList.remove("hidden");
+    }
 }
 
 if (closePopup) {
@@ -122,6 +128,9 @@ if (closePopup) {
 
 function unlockWebsite(role = currentUserRole) {
     currentUserRole = role;
+    const hintContainer = document.getElementById("passwordHintContainer");
+    if (hintContainer) hintContainer.classList.add("hidden");
+
     const lockCard = document.querySelector(".lock-card");
     if (lockCard) {
         lockCard.classList.add("unlocking");
@@ -176,7 +185,7 @@ function unlockWebsite(role = currentUserRole) {
         // 💖 Show Big Beating Heart for 2.6s, then auto-transition to Diary!
         setTimeout(() => {
             transitionToDiaryStage();
-        }, 2600);
+        }, 1000);
     }, 1700);
 }
 
@@ -184,6 +193,8 @@ function applyRoleUI(role = currentUserRole) {
     const roleBadge = document.getElementById("roleBadge");
     const modeToggleBtn = document.getElementById("modeToggleBtn");
     const openDiaryWrapper = document.getElementById("openDiaryWrapper");
+    const decorateToolbar = document.getElementById("decorateToolbar");
+    const addPageBtn = document.getElementById("addPageBtn");
 
     if (roleBadge) {
         if (role === "editor") {
@@ -198,30 +209,37 @@ function applyRoleUI(role = currentUserRole) {
     if (role === "reader") {
         if (diaryState) diaryState.isReadMode = true;
         if (openDiaryWrapper) openDiaryWrapper.classList.add("read-mode");
-        if (modeToggleBtn) {
-            modeToggleBtn.textContent = "📖 Read Only";
-            modeToggleBtn.classList.remove("active");
-            modeToggleBtn.title = "Viewing Mode (Locked for Reader)";
-        }
+        if (decorateToolbar) decorateToolbar.style.display = "none";
+        if (addPageBtn) addPageBtn.style.display = "none";
+        if (modeToggleBtn) modeToggleBtn.style.display = "none";
     } else {
+        // EDITOR MODE: Always active decorating mode so all tools, stickers, reels & fonts are ready!
+        if (diaryState) diaryState.isReadMode = false;
+        if (openDiaryWrapper) openDiaryWrapper.classList.remove("read-mode");
+        if (decorateToolbar) {
+            decorateToolbar.style.display = "flex";
+            decorateToolbar.style.opacity = "1";
+            decorateToolbar.style.transform = "translateY(-50%)";
+            decorateToolbar.style.pointerEvents = "auto";
+        }
+        if (addPageBtn) addPageBtn.style.display = "";
         if (modeToggleBtn) {
-            modeToggleBtn.textContent = (diaryState && diaryState.isReadMode) ? "📖 Read Mode" : "✨ Decorate Mode";
-            if (diaryState && !diaryState.isReadMode) {
-                modeToggleBtn.classList.add("active");
-                if (openDiaryWrapper) openDiaryWrapper.classList.remove("read-mode");
-            }
+            modeToggleBtn.style.display = "inline-flex";
+            modeToggleBtn.textContent = "✨ Decorate Mode";
+            modeToggleBtn.classList.add("active");
+            modeToggleBtn.title = "Click to preview how Reader will see it";
         }
     }
 }
 
 function lockWebsite() {
-    // Pause audio
-    const bgAudio = document.getElementById("bgMusicAudio");
-    if (bgAudio) {
-        try { bgAudio.pause(); } catch (e) {}
-    }
+    // Ensure background music keeps playing continuously
+    playRomanticMusic();
     const musicBtn = document.getElementById("musicToggleBtn");
-    if (musicBtn) musicBtn.classList.remove("spinning");
+    if (musicBtn) musicBtn.classList.add("spinning");
+
+    const hintContainer = document.getElementById("passwordHintContainer");
+    if (hintContainer) hintContainer.classList.add("hidden");
 
     // Clear saved session role
     sessionStorage.removeItem("user_role");
@@ -1388,6 +1406,69 @@ const DEFAULT_DIARY_DATA = {
                     zIndex: 5
                 }
             ]
+        },
+        // Page 3
+        {
+            pageNumber: 3,
+            items: [
+                {
+                    id: "item-8",
+                    type: "text",
+                    left: 10,
+                    top: 18,
+                    width: 80,
+                    height: 22,
+                    content: "Our Magical Reels 🎬",
+                    font: "'Great Vibes', cursive",
+                    size: 36,
+                    color: "#781232",
+                    glow: true,
+                    zIndex: 2
+                },
+                {
+                    id: "item-9",
+                    type: "text",
+                    left: 10,
+                    top: 42,
+                    width: 80,
+                    height: 35,
+                    content: "Tap any video reel on the right to play and watch our favorite memories right here on the page! 💖",
+                    font: "'Caveat', cursive",
+                    size: 22,
+                    color: "#2c1820",
+                    glow: false,
+                    zIndex: 2
+                },
+                {
+                    id: "item-10",
+                    type: "sticker",
+                    left: 42,
+                    top: 76,
+                    width: 16,
+                    height: 14,
+                    content: "✨",
+                    zIndex: 3
+                }
+            ]
+        },
+        // Page 4: Reel Demonstration
+        {
+            pageNumber: 4,
+            items: [
+                {
+                    id: "item-11",
+                    type: "reel",
+                    left: 28,
+                    top: 8,
+                    width: 44,
+                    height: 84,
+                    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                    autoplay: false,
+                    loop: true,
+                    muted: false,
+                    zIndex: 4
+                }
+            ]
         }
     ]
 };
@@ -1417,6 +1498,29 @@ function scheduleDiaryStageTransition() {
 }
 
 function transitionToDiaryStage() {
+    const welcomeScreen = document.getElementById("welcomeScreen");
+    const diaryStage = document.getElementById("diaryStage");
+    const closedDiaryWrapper = document.getElementById("closedDiaryWrapper");
+    const openDiaryWrapper = document.getElementById("openDiaryWrapper");
+
+    if (welcomeScreen) {
+        welcomeScreen.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+        welcomeScreen.style.opacity = "0";
+        welcomeScreen.style.transform = "scale(0.9)";
+        setTimeout(() => {
+            welcomeScreen.classList.add("hidden");
+        }, 600);
+    }
+
+    if (diaryStage) {
+        diaryStage.classList.remove("hidden");
+        // Show closed 3D Diary book first so user clicks to open
+        if (closedDiaryWrapper) closedDiaryWrapper.classList.remove("hidden");
+        if (openDiaryWrapper) openDiaryWrapper.classList.add("hidden");
+    }
+}
+
+function transitionToDiaryStageOld() {
     const welcomeScreen = document.getElementById("welcomeScreen");
     const diaryStage = document.getElementById("diaryStage");
     const closedDiaryWrapper = document.getElementById("closedDiaryWrapper");
@@ -1541,7 +1645,7 @@ function parseVideoUrl(url) {
         return {
             type: "youtube",
             videoId: vidId,
-            embedUrl: `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1&mute=1&loop=1&playlist=${vidId}&controls=1&modestbranding=1&rel=0`
+            embedUrl: `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=0&mute=0&loop=1&playlist=${vidId}&controls=1&modestbranding=1&rel=0`
         };
     }
 
@@ -1807,8 +1911,8 @@ function renderCurrentPages() {
         rightPageContent.appendChild(el);
     });
 
-    // Autoplay any active reels on current spread
-    setTimeout(playActivePageVideos, 200);
+    // Reels remain paused by default; user clicks to watch on the page
+    pauseActivePageVideos();
 }
 
 /* -------------------------------------------------------------
@@ -2192,15 +2296,47 @@ function createDiaryItemElement(item, side, pageIndex) {
             video.className = "item-reel-video";
             video.src = item.src;
             video.playsInline = true;
-            video.muted = item.muted !== false;
+            video.muted = item.muted === true;
             video.loop = item.loop !== false;
-            video.autoplay = item.autoplay !== false;
+            video.autoplay = false; // Stopped by default as requested
 
             // Error fallback: If video URL fails or offline, show romantic poster instead of empty black box
             video.onerror = () => {
                 console.warn("Video failed to load, applying romantic fallback:", item.src);
                 video.poster = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='640' viewBox='0 0 360 640'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23360b1e'/><stop offset='100%' stop-color='%2312030b'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23bg)'/><text x='50%' y='46%' text-anchor='middle' font-size='48'>💖</text><text x='50%' y='54%' text-anchor='middle' fill='%23ff80ab' font-family='sans-serif' font-size='16' font-weight='600'>Forever With You ❤️</text></svg>";
             };
+
+            // Play Overlay (Visible when reel is stopped; click to watch on the page)
+            const playOverlay = document.createElement("div");
+            playOverlay.className = "reel-play-overlay active";
+            playOverlay.innerHTML = `
+                <div class="reel-play-btn-circle">▶</div>
+                <span class="reel-play-text">Tap to Watch</span>
+            `;
+
+            const toggleVideoPlay = (e) => {
+                e.stopPropagation();
+                if (video.paused) {
+                    video.play().then(() => {
+                        playOverlay.classList.remove("active");
+                    }).catch(err => {
+                        console.warn("Video play error, attempting muted fallback:", err);
+                        video.muted = true;
+                        video.play().then(() => {
+                            playOverlay.classList.remove("active");
+                        }).catch(e => console.log(e));
+                    });
+                } else {
+                    video.pause();
+                    playOverlay.classList.add("active");
+                }
+            };
+
+            playOverlay.addEventListener("click", toggleVideoPlay);
+            video.addEventListener("click", toggleVideoPlay);
+            video.addEventListener("play", () => playOverlay.classList.remove("active"));
+            video.addEventListener("pause", () => playOverlay.classList.add("active"));
+            video.addEventListener("ended", () => playOverlay.classList.add("active"));
 
             // Dedicated 1-Tap Sound Toggle Button (🔊 / 🔇)
             const soundBtn = document.createElement("button");
@@ -2214,22 +2350,13 @@ function createDiaryItemElement(item, side, pageIndex) {
                 soundBtn.textContent = video.muted ? "🔇" : "🔊";
                 soundBtn.title = video.muted ? "Unmute Sound 🔊" : "Mute Sound 🔇";
                 if (!video.muted && video.paused) {
-                    video.play().catch(err => console.log("Play on unmute gesture:", err));
+                    toggleVideoPlay(e);
                 }
             };
-            phoneWrap.appendChild(soundBtn);
-
-            // Tap video to play/pause
-            video.addEventListener("click", (e) => {
-                e.stopPropagation();
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
-            });
 
             phoneWrap.appendChild(video);
+            phoneWrap.appendChild(playOverlay);
+            phoneWrap.appendChild(soundBtn);
         }
 
         // Bottom Home Indicator Bar
@@ -2759,7 +2886,7 @@ function setupModals() {
                 height: 82,
                 src: currentReelSrc,
                 mediaBlobKey: currentReelBlobKey || null,
-                autoplay: autoplay,
+                autoplay: false, // Stopped by default; click to watch on the page
                 loop: loop,
                 muted: true,
                 zIndex: 4
@@ -2847,10 +2974,19 @@ function setupStickerPicker() {
 ------------------------------------------------------------- */
 
 function setupDiaryListeners() {
-    // Closed Book click
+    // Closed Book click (Tap book or hint to open)
     const closedBook = document.getElementById("closedDiary3D");
     if (closedBook) {
         closedBook.addEventListener("click", openDiaryBook);
+    }
+    const closedWrapper = document.getElementById("closedDiaryWrapper");
+    if (closedWrapper) {
+        closedWrapper.style.cursor = "pointer";
+        closedWrapper.addEventListener("click", (e) => {
+            if (!closedBook || !closedBook.classList.contains("is-opening")) {
+                openDiaryBook();
+            }
+        });
     }
 
     // Close Book button

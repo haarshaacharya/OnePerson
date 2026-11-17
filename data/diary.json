@@ -1,0 +1,104 @@
+{
+  "currentPagePair": 0,
+  "isReadMode": false,
+  "pages": [
+    {
+      "pageNumber": 1,
+      "items": [
+        {
+          "id": "item-1",
+          "type": "text",
+          "left": 8,
+          "top": 10,
+          "width": 84,
+          "height": 18,
+          "content": " First Meet",
+          "font": "'Great Vibes', cursive",
+          "size": 34,
+          "color": "#781232",
+          "glow": true,
+          "zIndex": 1
+        },
+        {
+          "id": "item-2",
+          "type": "text",
+          "left": 7.8,
+          "top": 34.9,
+          "width": 84,
+          "height": 48,
+          "content": "30/1/2026. I saw first time in center lawn. when malhar thakar and comring for movie promot in our clg.\n\n\n\n",
+          "font": "'Caveat', cursive",
+          "size": 20,
+          "color": "#2c1820",
+          "glow": false,
+          "zIndex": 2
+        },
+        {
+          "id": "item-3",
+          "type": "sticker",
+          "left": 2.6,
+          "top": 86.7,
+          "width": 14,
+          "height": 12,
+          "content": "🌹",
+          "zIndex": 3
+        },
+        {
+          "id": "item-4",
+          "type": "sticker",
+          "left": 80.4,
+          "top": 85.5,
+          "width": 14,
+          "height": 12,
+          "content": "✨",
+          "zIndex": 3
+        }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "items": [
+        {
+          "id": "item-6",
+          "type": "text",
+          "left": 15.5,
+          "top": 75.5,
+          "width": 76,
+          "height": 22,
+          "content": "Tap any photo or text to resize, move, or style it! 🎬 Add reels, videos, music, and stickers anytime.",
+          "font": "'Dancing Script', cursive",
+          "size": 19,
+          "color": "#8c4456",
+          "glow": false,
+          "zIndex": 2
+        },
+        {
+          "id": "item-7",
+          "type": "sticker",
+          "left": 80,
+          "top": 6,
+          "width": 14,
+          "height": 12,
+          "content": "🎀",
+          "zIndex": 5
+        }
+      ]
+    },
+    {
+      "pageNumber": 3,
+      "items": []
+    },
+    {
+      "pageNumber": 4,
+      "items": []
+    },
+    {
+      "pageNumber": 5,
+      "items": []
+    },
+    {
+      "pageNumber": 6,
+      "items": []
+    }
+  ]
+}
