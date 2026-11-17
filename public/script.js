@@ -2121,8 +2121,8 @@ function flipPage(direction) {
         saveDiaryToStorage();
         isPageFlipping = false;
 
-        // Autoplay reels on the new spread
-        setTimeout(playActivePageVideos, 200);
+        // Keep reels paused by default; user clicks to play
+        pauseActivePageVideos();
     }, 780);
 }
 
@@ -2178,18 +2178,37 @@ function toggleReadingMode() {
 
     const wrapper = document.getElementById("openDiaryWrapper");
     const toggleBtn = document.getElementById("modeToggleBtn");
+    const toolbar = document.getElementById("decorateToolbar");
     diaryState.isReadMode = !diaryState.isReadMode;
 
     if (diaryState.isReadMode) {
-        wrapper.classList.add("read-mode");
-        toggleBtn.textContent = "📖 Read Mode";
-        toggleBtn.classList.remove("active");
+        if (wrapper) wrapper.classList.add("read-mode");
+        if (toolbar) {
+            toolbar.style.opacity = "0";
+            toolbar.style.pointerEvents = "none";
+            toolbar.style.transform = "translateY(-50%) translateX(120px)";
+        }
+        if (toggleBtn) {
+            toggleBtn.textContent = "👁️ Preview: Read Mode";
+            toggleBtn.classList.remove("active");
+        }
         deselectAllItems();
+        showToastNotice("Previewing Reader View 👁️");
     } else {
-        wrapper.classList.remove("read-mode");
-        toggleBtn.textContent = "✨ Decorate Mode";
-        toggleBtn.classList.add("active");
+        if (wrapper) wrapper.classList.remove("read-mode");
+        if (toolbar) {
+            toolbar.style.display = "flex";
+            toolbar.style.opacity = "1";
+            toolbar.style.pointerEvents = "auto";
+            toolbar.style.transform = "translateY(-50%)";
+        }
+        if (toggleBtn) {
+            toggleBtn.textContent = "✨ Decorate Mode";
+            toggleBtn.classList.add("active");
+        }
+        showToastNotice("✨ Decorate Mode Active! (Edit text, stickers, reels & photos)");
     }
+    renderCurrentPages();
     saveDiaryToStorage();
 }
 
@@ -3088,10 +3107,12 @@ function updateAmbientBadge(isPlaying) {
 function attemptAutoplay(audioEl) {
     if (!audioEl) return;
     audioEl.volume = 1.0;
-    audioEl.muted = false;
     audioEl.loop = true;
 
+    // 1. Attempt direct unmuted playback at 100% volume
+    audioEl.muted = false;
     const playPromise = audioEl.play();
+
     if (playPromise !== undefined) {
         playPromise
             .then(() => {
@@ -3101,29 +3122,38 @@ function attemptAutoplay(audioEl) {
                 updateAmbientBadge(true);
             })
             .catch(() => {
-                isMusicPlaying = false;
-                updateAmbientBadge(false);
+                // 2. If browser autoplay policy blocks unmuted audio on load,
+                // start playing muted immediately so stream buffers with zero delay:
+                audioEl.muted = true;
+                audioEl.play().catch(() => {});
 
-                const unlockOnInteraction = () => {
-                    audioEl.volume = 1.0;
+                // 3. Listen to ANY subtle movement/gesture on screen (no click required!)
+                const triggerEvents = [
+                    "pointermove", "mousemove", "mouseenter", "mouseover",
+                    "pointerdown", "click", "touchstart", "touchend",
+                    "keydown", "scroll", "wheel", "focus"
+                ];
+
+                const activateSound = () => {
                     audioEl.muted = false;
+                    audioEl.volume = 1.0;
                     audioEl.play().then(() => {
                         isMusicPlaying = true;
                         currentMusicType = "audio";
                         updateMusicDiscState();
                         updateAmbientBadge(true);
-                    }).catch(e => console.log("Unlock audio error:", e));
+                    }).catch(err => console.log("Audio unlock retry:", err));
 
-                    window.removeEventListener("pointerdown", unlockOnInteraction);
-                    window.removeEventListener("click", unlockOnInteraction);
-                    window.removeEventListener("keydown", unlockOnInteraction);
-                    window.removeEventListener("touchstart", unlockOnInteraction);
+                    triggerEvents.forEach(ev => {
+                        window.removeEventListener(ev, activateSound, true);
+                        document.removeEventListener(ev, activateSound, true);
+                    });
                 };
 
-                window.addEventListener("pointerdown", unlockOnInteraction, { once: true });
-                window.addEventListener("click", unlockOnInteraction, { once: true });
-                window.addEventListener("keydown", unlockOnInteraction, { once: true });
-                window.addEventListener("touchstart", unlockOnInteraction, { once: true });
+                triggerEvents.forEach(ev => {
+                    window.addEventListener(ev, activateSound, { passive: true, capture: true });
+                    document.addEventListener(ev, activateSound, { passive: true, capture: true });
+                });
             });
     }
 }
