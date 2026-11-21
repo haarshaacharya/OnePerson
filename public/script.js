@@ -8,7 +8,11 @@ const secretWebsite = document.getElementById("secretWebsite");
 const container = document.querySelector(".container");
 
 // Role state: 'editor' | 'reader'
-let currentUserRole = sessionStorage.getItem("user_role") || null;
+let currentUserRole = null;
+try {
+    sessionStorage.removeItem("user_role");
+    sessionStorage.removeItem("editor_key");
+} catch (e) {}
 
 // Password visibility toggle (Eye button)
 const togglePasswordBtn = document.getElementById("togglePasswordBtn");
@@ -61,50 +65,43 @@ async function checkPassword() {
     const enteredPassword = passwordInput.value;
     if (!enteredPassword) return;
 
-    setUnlockBtn("CHECKING...", "⏳");
+    const passClean = enteredPassword.trim().toLowerCase();
 
-    try {
-        const response = await fetch("/api/unlock", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                password: enteredPassword
-            })
-        });
+    // Editor Passwords (Accepts Haarsh20, Harsh20, Harssh20)
+    const isEditor = (passClean === "haarsh20" || passClean === "harsh20" || passClean === "harssh20");
+    // Reader Passwords (Accepts sanu16, aliu20)
+    const isReader = (passClean === "sanu16" || passClean === "aliu20");
 
-        const data = await response.json();
-
-        if (data.success) {
-            currentUserRole = data.role;
-            sessionStorage.setItem("user_role", currentUserRole);
-            if (currentUserRole === "editor") {
-                sessionStorage.setItem("editor_key", enteredPassword);
-            }
-            unlockWebsite(currentUserRole);
-        } else {
-            showRestrictedPopup();
-            setUnlockBtn("UNLOCK ACCESS", "🔓");
-        }
-    } catch (error) {
-        console.warn("API request failed or running offline, checking fallback passwords:", error);
-        const passClean = enteredPassword.trim().toLowerCase();
-        if (passClean === "haarsh20") {
-            currentUserRole = "editor";
-            sessionStorage.setItem("user_role", "editor");
-            sessionStorage.setItem("editor_key", enteredPassword);
-            unlockWebsite("editor");
-        } else if (passClean === "sanu16" || passClean === "aliu20") {
-            currentUserRole = "reader";
-            sessionStorage.setItem("user_role", "reader");
-            unlockWebsite("reader");
-        } else {
-            showRestrictedPopup();
-            setUnlockBtn("UNLOCK ACCESS", "🔓");
-        }
+    if (!isEditor && !isReader) {
+        showRestrictedPopup();
+        setUnlockBtn("UNLOCK ACCESS", "🔓");
+        passwordInput.value = "";
+        return;
     }
 
+    setUnlockBtn("CHECKING...", "⏳");
+
+    const role = isEditor ? "editor" : "reader";
+    currentUserRole = role;
+    try {
+        sessionStorage.setItem("user_role", role);
+        if (isEditor) {
+            sessionStorage.setItem("editor_key", "Haarsh20");
+        } else {
+            sessionStorage.removeItem("editor_key");
+        }
+    } catch (e) {}
+
+    // Send unlock event to server in background
+    try {
+        fetch("/api/unlock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: enteredPassword })
+        }).catch(() => {});
+    } catch (e) {}
+
+    unlockWebsite(role);
     passwordInput.value = "";
 }
 

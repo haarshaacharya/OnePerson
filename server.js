@@ -62,12 +62,13 @@ app.post("/api/unlock", (req, res) => {
         return res.status(400).json({ success: false, message: "Password required" });
     }
 
-    const adminPassword = process.env.ADMIN_PASSWORD || process.env.SECRET_PASSWORD || "Haarsh20";
-    const readerPassword = process.env.READER_PASSWORD || "sanu16";
+    const adminPassword = (process.env.ADMIN_PASSWORD || process.env.SECRET_PASSWORD || "Haarsh20").toLowerCase();
+    const readerPassword = (process.env.READER_PASSWORD || "sanu16").toLowerCase();
     const clean = String(enteredPassword).trim().toLowerCase();
 
-    // 1. Check Editor / Admin Password
-    if (clean === adminPassword.toLowerCase()) {
+    // 1. Check Editor / Admin Password (Haarsh20 / Harsh20 / Harssh20)
+    const validEditors = [adminPassword, "haarsh20", "harsh20", "harssh20"];
+    if (validEditors.includes(clean)) {
         return res.json({
             success: true,
             role: "editor",
@@ -76,7 +77,8 @@ app.post("/api/unlock", (req, res) => {
     }
 
     // 2. Check Reader Password (supports sanu16, and example password aliu20)
-    if (clean === readerPassword.toLowerCase() || clean === "aliu20") {
+    const validReaders = [readerPassword, "sanu16", "aliu20"];
+    if (validReaders.includes(clean)) {
         return res.json({
             success: true,
             role: "reader",
@@ -116,9 +118,10 @@ app.get("/api/diary", (req, res) => {
 // POST Diary Data (Editor only)
 app.post("/api/diary", (req, res) => {
     const editorKey = req.headers["x-editor-key"] || req.body.editorKey;
-    const adminPassword = process.env.ADMIN_PASSWORD || process.env.SECRET_PASSWORD || "Haarsh20";
+    const adminPassword = (process.env.ADMIN_PASSWORD || process.env.SECRET_PASSWORD || "Haarsh20").toLowerCase();
+    const validEditors = [adminPassword, "haarsh20", "harsh20", "harssh20"];
 
-    if (!editorKey || String(editorKey).trim().toLowerCase() !== adminPassword.toLowerCase()) {
+    if (!editorKey || !validEditors.includes(String(editorKey).trim().toLowerCase())) {
         return res.status(403).json({
             success: false,
             message: "Forbidden: Only Editor can save diary changes."
